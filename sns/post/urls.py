@@ -5,6 +5,7 @@ app_name='post'
 
 main_urlpatterns=[
     path('',views.index,name='index')
+    #nameを用いるとurlが変更されても動的にnameの値で対応できる!!
 ]
 
 api_urlpatterns=[

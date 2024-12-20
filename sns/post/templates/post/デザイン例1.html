@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Dark SNS</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --surface-color: #1E1E1E;
+            --primary-color: #BB86FC;
+            --secondary-color: #03DAC6;
+            --text-color: #FFFFFF;
+            --text-secondary-color: #B0B0B0;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background-color: var(--surface-color);
+            padding: 15px 0;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            margin-left: 20px;
+        }
+
+        .main-content {
+            display: flex;
+            margin-top: 30px;
+        }
+
+        .posts {
+            flex: 2;
+            margin-right: 30px;
+        }
+
+        .post {
+            background-color: var(--surface-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+
+        .post-meta {
+            font-size: 14px;
+            color: var(--text-secondary-color);
+        }
+
+        .post-content {
+            margin-bottom: 15px;
+        }
+
+        .post-actions {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary-color);
+            cursor: pointer;
+        }
+
+        .sidebar {
+            flex: 1;
+        }
+
+        .widget {
+            background-color: var(--surface-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .widget-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        .trending-tag {
+            display: block;
+            margin-bottom: 10px;
+            color: var(--secondary-color);
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">DarkSNS</div>
+                <div class="nav-links">
+                    <a href="#">ホーム</a>
+                    <a href="#">プロフィール</a>
+                    <a href="#">メッセージ</a>
+                    <a href="#">通知</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container main-content">
+        <div class="posts">
+            <div class="post">
+                <div class="post-header">
+                    <img src="https://via.placeholder.com/40" alt="User Avatar" class="avatar">
+                    <div>
+                        <h3>ユーザー名</h3>
+                        <span class="post-meta">2時間前</span>
+                    </div>
+                </div>
+                <div class="post-content">
+                    <p>これは投稿の内容です。#新しい #投稿 #ダークモード</p>
+                </div>
+                <div class="post-actions">
+                    <button class="action-btn">❤️ いいね</button>
+                    <button class="action-btn">💬 コメント</button>
+                    <button class="action-btn">🔁 共有</button>
+                </div>
+            </div>
+            <!-- 他の投稿をここに追加 -->
+        </div>
+        <div class="sidebar">
+            <div class="widget">
+                <h3 class="widget-title">トレンド</h3>
+                <a href="#" class="trending-tag">#ダークモード</a>
+                <a href="#" class="trending-tag">#新機能</a>
+                <a href="#" class="trending-tag">#デザイン</a>
+            </div>
+            <div class="widget">
+                <h3 class="widget-title">おすすめユーザー</h3>
+                <!-- おすすめユーザーリストをここに追加 -->
+            </div>
+        </div>
+    </div>
+</body>
+</html>
