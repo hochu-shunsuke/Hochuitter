@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hochuitter - Modern SNS</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --surface-color: #1E1E1E;
+            --primary-color: #BB86FC;
+            --secondary-color: #03DAC6;
+            --text-color: #FFFFFF;
+            --text-secondary-color: #B0B0B0;
+            --hashtag-color: #4FC3F7;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            padding: 20px;
+            background-color: var(--surface-color);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 40px;
+        }
+
+        .nav-links {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .nav-link {
+            color: var(--text-color);
+            text-decoration: none;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            font-size: 18px;
+            padding: 10px;
+            border-radius: 9999px;
+            transition: background-color 0.3s;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-link svg {
+            width: 24px;
+            height: 24px;
+            margin-right: 15px;
+        }
+
+        .post-btn {
+            margin-top: auto;
+            background-color: var(--primary-color);
+            color: var(--bg-color);
+            border: none;
+            padding: 12px 20px;
+            border-radius: 9999px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .post-btn:hover {
+            background-color: #a56ef3;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 20px;
+            max-width: 600px;
+        }
+
+        .post {
+            background-color: var(--surface-color);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+
+        .post-meta h3 {
+            font-size: 16px;
+            margin-bottom: 3px;
+        }
+
+        .post-meta span {
+            font-size: 14px;
+            color: var(--text-secondary-color);
+        }
+
+        .post-content {
+            margin-bottom: 15px;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .hashtag {
+            color: var(--hashtag-color);
+            text-decoration: none;
+        }
+
+        .post-actions {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary-color);
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+
+        .action-btn svg {
+            width: 18px;
+            height: 18px;
+            margin-right: 5px;
+        }
+
+        .trending {
+            position: fixed;
+            right: 20px;
+            top: 20px;
+            width: 250px;
+            background-color: var(--surface-color);
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .trending h2 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        .trending-tag {
+            display: block;
+            margin-bottom: 10px;
+            color: var(--hashtag-color);
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        @media (max-width: 1200px) {
+            .trending {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 60px;
+                padding: 10px;
+            }
+
+            .logo, .nav-link span, .post-btn span {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 60px;
+            }
+
+            .nav-link, .post-btn {
+                justify-content: center;
+            }
+
+            .nav-link svg {
+                margin-right: 0;
+            }
+        }
+        /* 以下をレスポンシブ外へ移動 */
+        /* スイッチ全体のスタイル */
+        .theme-switch {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        /* スイッチ本体 */
+        .switch {
+            position: relative;
+            width: 50px;
+            height: 25px;
+            background-color: var(--surface-color); /* 初期はライトモードの色 */
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s;
+        }
+
+        .switch::before {
+            content: "";
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 19px;
+            height: 19px;
+            background-color: var(--primary-color); /* 初期トグルの色 */
+            border-radius: 50%;
+            transition: transform 0.3s, background-color 0.3s;
+        }
+
+        /* 太陽アイコン */
+        .icon.sun {
+            position: absolute;
+            top: 50%;
+            left: 8px;
+            transform: translateY(-50%);
+            font-size: 14px;
+            color: var(--text-color);
+            transition: opacity 0.3s;
+            opacity: 1; /* 初期状態で表示 */
+        }
+
+        /* 月アイコン */
+        .icon.moon {
+            position: absolute;
+            top: 50%;
+            right: 8px;
+            transform: translateY(-50%);
+            font-size: 14px;
+            color: var(--text-color);
+            transition: opacity 0.3s;
+            opacity: 0; /* 初期状態で非表示 */
+        }
+
+        /* ダークモード (activeクラス追加時) */
+        .switch.active {
+            background-color: var(--primary-color); /* ダークモードのスイッチ背景色 */
+        }
+
+        .switch.active::before {
+            transform: translateX(25px); /* トグルを右側に移動 */
+            background-color: var(--bg-color); /* トグル色を反転 */
+        }
+
+        .switch.active .icon.sun {
+            opacity: 0; /* 太陽を非表示 */
+        }
+
+        .switch.active .icon.moon {
+            opacity: 1; /* 月を表示 */
+        }
+
+
+
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <h1 class="logo">Hochuitter</h1>
+        <nav class="nav-links">
+            <a href="#" class="nav-link">
+                <svg fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+                </svg>
+                <span>ホーム</span>
+            </a>
+            <a href="#" class="nav-link">
+                <svg fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
+                </svg>
+                <span>話題を検索</span>
+            </a>
+            <a href="#" class="nav-link">
+                <svg fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                </svg>
+                <span>メッセージ</span>
+            </a>
+            <a href="#" class="nav-link">
+                <svg fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path>
+                </svg>
+                <span>ブックマーク</span>
+            </a>
+            <a href="#" class="nav-link">
+                <svg fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                </svg>
+                <span>マイページ</span>
+            </a>
+        </nav>
+        <button class="post-btn">
+            <svg fill="currentColor" viewBox="0 0 20 20" style="width: 24px; height: 24px; margin-right: 8px;">
+                <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path>
+            </svg>
+            <span>ポストする</span>
+        </button>
+    </aside>
+
+    <main class="main-content">
+        <div class="post">
+            <div class="post-header">
+                <img src="https://api.dicebear.com/6.x/initials/svg?seed=TT" alt="田中太郎のアバター" class="avatar">
+                <div class="post-meta">
+                    <h3>田中太郎</h3>
+                    <span>2時間前</span>
+                </div>
+            </div>
+            <div class="post-content">
+                <p>新しいプロジェクトが始まりました！みんなで頑張りましょう！ <a href="#" class="hashtag">#新プロジェクト</a> <a href="#" class="hashtag">#チームワーク</a></p>
+            </div>
+            <div class="post-actions">
+                <button class="action-btn">
+                    <svg fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>
+                    </svg>
+                    25
+                </button>
+                <button class="action-btn">
+                    <svg fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z" clip-rule="evenodd"></path>
+                    </svg>
+                    5
+                </button>
+                <button class="action-btn">
+                    <svg fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"></path>
+                    </svg>
+                    3
+                </button>
+            </div>
+        </div>
+
+        <div class="post">
+            <div class="post-header">
+                <img src="https://api.dicebear.com/6.x/initials/svg?seed=SH" alt="佐藤花子のアバター" class="avatar">
+                <div class="post-meta">
+                    <h3>佐藤花子</h3>
+                    <span>4時間前</span>
+                </div>
+            </div>
+            <div class="post-content">
+                <p>今日の夕焼けがとても綺麗でした。自然の美しさに感動！ <a href="#" class="hashtag">#夕焼け</a> <a href="#" class="hashtag">#自然</a> <a href="#" class="hashtag">#感動</a></p>
+            </div>
+            <div class="post-actions">
+                <button class="action-btn">
+                    <svg fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>
+                    </svg>
+                    42
+                </button>
+                <button class="action-btn">
+                    <svg fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z" clip-rule="evenodd"></path>
+                    </svg>
+                    8
+                </button>
+                <button class="action-btn">
+                    <svg fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"></path>
+                    </svg>
+                    12
+                </button>
+            </div>
+        </div>
+
+        <div class="post">
+            <div class="post-header">
+                <img src="https://api.dicebear.com/6.x/initials/svg?seed=SI" alt="鈴木一郎のアバター" class="avatar">
+                <div class="post-meta">
+                    <h3>鈴木一郎</h3>
+                    <span>6時間前</span>
+                </div>
+            </div>
+            <div class="post-content">
+                <p>新しい技術を学ぶのは大変だけど、とてもワクワクします。皆さんはどんな技術に興味がありますか？ <a href="#" class="hashtag">#テクノロジー</a> <a href="#" class="hashtag">#学習</a> <a href="#" class="hashtag">#成長</a></p>
+            </div>
+            <div class="post-actions">
+                <button class="action-btn">
+                    <svg fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>
+                    </svg>
+                    37
+                </button>
+                <button class="action-btn">
+                    <svg fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z" clip-rule="evenodd"></path>
+                    </svg>
+                    15
+                </button>
+                <button class="action-btn">
+                    <svg fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"></path>
+                    </svg>
+                    7
+                </button>
+            </div>
+        </div>
+
+        <div class="theme-switch">
+            <div class="switch">
+                <span class="icon sun">🌞</span>
+                <span class="icon moon">🌙</span>
+            </div>
+        </div>
+        
+        
+    </main>
+
+    <aside class="trending">
+        <h2>トレンド</h2>
+        <a href="#" class="trending-tag">#新プロジェクト</a>
+        <a href="#" class="trending-tag">#夕焼け</a>
+        <a href="#" class="trending-tag">#テクノロジー</a>
+        <a href="#" class="trending-tag">#チームワーク</a>
+        <a href="#" class="trending-tag">#学習</a>
+    </aside>
+
+
+    <script>
+        // JavaScript for interactivity can be added here
+        document.querySelectorAll('.action-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                let count = parseInt(this.textContent);
+                this.textContent = count + 1;
+                this.style.color = 'var(--primary-color)';
+            });
+        });
+
+
+        const themeSwitch = document.querySelector('.switch');
+    const root = document.documentElement;
+
+    // 初期状態をダークモードに設定
+    let isDarkMode = true;
+    themeSwitch.classList.add('active'); // 初期状態でアクティブにする
+
+    themeSwitch.addEventListener('click', () => {
+        isDarkMode = !isDarkMode; // 状態を反転
+
+        if (isDarkMode) {
+            // ダークモードに切り替え
+            root.style.setProperty('--bg-color', '#121212');
+            root.style.setProperty('--surface-color', '#1E1E1E');
+            root.style.setProperty('--primary-color', '#BB86FC');
+            root.style.setProperty('--secondary-color', '#03DAC6');
+            root.style.setProperty('--text-color', '#FFFFFF');
+            root.style.setProperty('--text-secondary-color', '#B0B0B0');
+            root.style.setProperty('--hashtag-color', '#4FC3F7');
+            themeSwitch.classList.add('active'); // スイッチをアクティブにする
+        } else {
+            // ライトモードに切り替え
+            root.style.setProperty('--bg-color', '#FFFFFF');
+            root.style.setProperty('--surface-color', '#F0F0F0');
+            root.style.setProperty('--primary-color', '#6200EE');
+            root.style.setProperty('--secondary-color', '#018786');
+            root.style.setProperty('--text-color', '#000000');
+            root.style.setProperty('--text-secondary-color', '#757575');
+            root.style.setProperty('--hashtag-color', '#0288D1');
+            themeSwitch.classList.remove('active'); // スイッチを非アクティブにする
+        }
+    });
+    </script>
+</body>
+</html>
