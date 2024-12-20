@@ -1,0 +1,32 @@
+# IDE
+.vscode/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# 仮想環境
+venv/
+.venv/
+
+# 環境変数
+.env
+
+# SQLite データベース
+db.sqlite3
+db.sqlite3.*
+
+# 静的ファイルとメディア
+/static/
+/media/
+
+# Django関連
+*.log
+*.pot
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
