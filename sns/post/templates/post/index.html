@@ -9,8 +9,11 @@
     <h1>投稿一覧</h1>
     <ul>
         {% for post in parent_posts %} <!--viewsのindex()からparent_postを受け取っている!!-->
+            <li>投稿者:{{ post.author }}</li>
             <li>{{ post.content }}</li>
             <li>いいね数:{{ post.like_count }}</li>
+            <li>投稿日時:{{ post.post_date }}</li>
+            <p>-------------------------------</p>
         {% empty %}
             <li>投稿がありません。</li>
         {% endfor %}
