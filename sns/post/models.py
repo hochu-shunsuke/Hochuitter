@@ -1,5 +1,3 @@
-#ここはmodelsの構成を単純かつ効率化できないか実験するファイル
-
 from django.db import models
 from django.contrib.auth.models import User
 

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hochuitter</title>
+</head>
+<body>
+    <h1>投稿一覧</h1>
+    <ul>
+        {% for post in parent_posts %} <!--viewsのindex()からparent_postを受け取っている!!-->
+            <li>{{ post.content }}</li>
+            <li>いいね数:{{ post.like_count }}</li>
+        {% empty %}
+            <li>投稿がありません。</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
