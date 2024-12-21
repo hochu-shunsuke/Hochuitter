@@ -7,4 +7,8 @@ class PostConfig(AppConfig):
     
     def ready(self):
         print("postアプリが起動しました!(post/apps.pyにて表示中)")
-    #Appconfigクラスにready()メソッドを用いるとアプリ起動時に実行される．
+    """
+    Appconfigクラスにready()メソッドを用いるとアプリ起動時に実行される．
+    これを何かに利用できないだろうか,,,備忘のためprint文を置いてある
+    """
+    
