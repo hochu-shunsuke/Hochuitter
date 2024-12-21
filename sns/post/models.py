@@ -21,7 +21,9 @@ class Post(models.Model):
         #postを投稿順で並び替え
 
 class Comment(models.Model):
-    post=models.ForeignKey(Post,related_name='comments',on_delete=models.CASCADE)
+    post=models.ForeignKey(Post,related_name='comments',on_delete=models.CASCADE,null=True,blank=True)#親オブジェクトpostに対するcomment
+    reply=models.ForeignKey('self',related_name='replies',on_delete=models.CASCADE,null=True,blank=True)#親オブジェクトcommentに対するcomment
+    #null:データベースレベルでの空,blank:フォームや管理画面レベルでの空
     """
     ForeignKey(Post):多対一の関係を示す(1つのpostに対して多数のcommentを関連づける)
     related_name='comment':逆方向の関係に名前をつけるためのオプション
