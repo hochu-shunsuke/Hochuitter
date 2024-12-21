@@ -48,6 +48,8 @@ class Comment(models.Model):
         ordering=['-like_count','-post_date']
         #commentをいいね数順に並び替え
 
+
+
 """
 models.PROTECT: 削除を禁止してエラーを発生させる。
 models.SET_NULL: 子オブジェクトのフィールドをNULLに設定（null=Trueが必要）。
