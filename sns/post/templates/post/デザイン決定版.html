@@ -28,33 +28,60 @@
         </aside>
 
         <main class="main-content">
-            <div class="post">
-                <div class="post-header">
-                    <a href="#" class="username">@田中太郎</a>
-                    <span>2時間前</span>
-                </div>
-                <p>新しいプロジェクトが始まりました！みんなで頑張りましょう！ <a href="#" class="hashtag">#新プロジェクト</a> <a href="#" class="hashtag">#チームワーク</a></p>
-            </div>
-
-            <div class="post">
-                <div class="post-header">
-                    <a href="#" class="username">@佐藤花子</a>
-                    <span>4時間前</span>
-                </div>
-                <p>今日の夕焼けがとても綺麗でした。自然の美しさに感動！ <a href="#" class="hashtag">#夕焼け</a> <a href="#" class="hashtag">#自然</a> <a href="#" class="hashtag">#感動</a></p>
-            </div>
-
-            <div class="post">
-                <div class="post-header">
-                    <a href="#" class="username">@鈴木一郎</a>
-                    <span>6時間前</span>
-                </div>
-                <p>新しい技術を学ぶのは大変だけど、とてもワクワクします。皆さんはどんな技術に興味がありますか？ <a href="#" class="hashtag">#テクノロジー</a> <a href="#" class="hashtag">#学習</a> <a href="#" class="hashtag">#成長</a></p>
-            </div>
+            <h1>投稿一覧(開発段階では最大20表示(views/py))</h1>
+            <ul class="post-list">
+                {% for post in parent_posts %} <!--viewsのindex()からparent_postを受け取っている!!-->
+                    <li class="post">
+                        <div class="post-header">
+                            投稿者:<a href="/user/{{ post.user.id }}" class="username">@{{ post.user }}</a> <!--userクラスを定義した．-->
+                        </div>
+                        <div class="post-content">
+                            <p>{{ post.content }}</p>
+                            <p>いいね数: {{ post.like_count }}</p>
+                            <p>返信数: {{ post.comment_count }}</p>
+                            <p>投稿日時: {{ post.post_date }}</p>
+                        </div>
+                        <hr style="border-top: 1px solid var(--text-color);">
+                    </li>
+                {% empty %}
+                    <li>投稿がありません。</li>
+                {% endfor %}
+            </ul>
         </main>
     </div>
 
     <button class="theme-switch" id="themeSwitch">🌞</button>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     <script>
         const themeSwitch = document.getElementById('themeSwitch');
@@ -81,6 +108,7 @@
         --username-color: #BB86FC;
     }
 
+    /* Light theme */
     .light-theme {
         --bg-color: #FFFFFF;
         --text-color: #000000;
@@ -91,6 +119,7 @@
     }
 
     body {
+        font-family: Arial, sans-serif;
         margin: 0;
         padding: 0;
         background-color: var(--bg-color);
@@ -140,6 +169,11 @@
         cursor: pointer;
     }
 
+    .post-list {
+        list-style-type: none;
+        padding: 0;
+    }
+
     .post {
         background-color: var(--surface-color);
         padding: 15px;
@@ -148,9 +182,11 @@
     }
 
     .post-header {
-        display: flex;
-        justify-content: space-between;
         margin-bottom: 10px;
+    }
+
+    .post-content {
+        margin-left: 0;
     }
 
     .theme-switch {
@@ -175,6 +211,9 @@
         text-decoration: none;
     }
 
-
+    hr {
+        margin: 10px 0;
+        padding: 0;
+    }
 </style>
 </html>
