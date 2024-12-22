@@ -4,19 +4,83 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hochuitter</title>
+    
 </head>
 <body>
-    <h1>投稿一覧</h1>
-    <ul>
-        {% for post in parent_posts %} <!--viewsのindex()からparent_postを受け取っている!!-->
-            投稿者:<a href="/user/{{ post.author.id }}" class="user">@{{ post.user }}</a> <!--userクラスを定義した．-->
-            <li>{{ post.content }}</li>
-            <li>いいね数:{{ post.like_count }}</li>
-            <li>投稿日時:{{ post.post_date }}</li>
-            <p>-------------------------------</p>
-        {% empty %}
-            <li>投稿がありません。</li>
-        {% endfor %}
-    </ul>
+    <div id="sidebar">
+        <a href="#"><button>ホーム</button></a>
+        <a href="#"><button>検索</button></a>
+        <a href="#"><button>メッセージ</button></a>
+        <a href="#"><button>ブックマーク</button></a>
+        <a href="#"><button>マイページ</button></a>
+        <a href="#"><button>ポストする</button></a>
+        <a href="#"><button>ログイン/新規登録</button></a>
+        <a href=""><button>(開発用)ホームへ戻る</button></a>
+    </div>
+    
+    <div id="content">
+        <h1>投稿一覧(開発段階では最大20表示(views/py))</h1>
+        <div id="timeline">
+            <ul>
+                {% for post in parent_posts %} <!--viewsのindex()からparent_postを受け取っている!!-->
+                    投稿者:<a href="/user/{{ post.user.id }}" class="user">@{{ post.user }}</a> <!--userクラスを定義した．-->
+                    <li>{{ post.content }}</li>
+                    <li>いいね数:{{ post.like_count }}</li>
+                    <li>返信数:{{ post.comment_count }}</li>
+                    <li>投稿日時:{{ post.post_date }}</li>
+                    <p>-------------------------------</p>
+                {% empty %}
+                    <li>投稿がありません。</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
 </body>
 </html>
+
+
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        display: flex;
+    }
+    
+    #sidebar {
+        width: 200px;
+        background-color: #f4f4f4;
+        padding: 20px;
+        height: 100vh;
+    }
+    
+    #sidebar button {
+        display: block;
+        width: 100%;
+        margin-bottom: 10px;
+        padding: 10px;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        cursor: pointer;
+    }
+    
+    #content {
+        flex: 1;
+        padding: 20px;
+    }
+
+    #timeline {
+        border: 1px solid #ddd;
+        padding: 10px;
+    }
+    
+    .user {
+        text-decoration: none;
+        color: #0077cc;
+    }
+    
+    .user:hover {
+        text-decoration: underline;
+    }
+</style>
