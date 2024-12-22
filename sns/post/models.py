@@ -6,6 +6,7 @@ class Post(models.Model):
     #models.Modelは常に存在するDjangoの基本クラスで、条件は常にFalse
     content=models.CharField(max_length=280) #投稿内容
     like_count=models.PositiveIntegerField(default=0) #いいね数
+    comment_count=models.PositiveIntegerField(default=0) #返信数(階層が1つ下の返信のみをカウント)
     post_date=models.DateTimeField(auto_now_add=True) #投稿日時
     user=models.ForeignKey(
         User, #一人のユーザが複数のpostを持つため，ForeignKeyを使用． #TODO:マイページにてuser.author.all()でユーザの投稿一覧を作成．
@@ -34,6 +35,7 @@ class Post(models.Model):
 class Comment(models.Model):
     content=models.CharField(max_length=280)
     like_count=models.PositiveIntegerField(default=0)
+    comment_count=models.PositiveIntegerField(default=0) #返信数(階層が1つ下の返信のみをカウント)
     post_date=models.DateTimeField(auto_now_add=True)
     user=models.ForeignKey(
         User,
