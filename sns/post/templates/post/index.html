@@ -26,7 +26,7 @@
                     投稿者:<a href="/user/{{ post.user.id }}" class="user">@{{ post.user }}</a> <!--userクラスを定義した．-->
                     <li>{{ post.content }}</li>
                     <li>いいね数:{{ post.like_count }}</li>
-                    <li>返信数:{{ post.comment_count }}</li>
+                    <li>返信数:{{ post.comment_count }}(comment_countの処理が未実装)</li>
                     <li>投稿日時:{{ post.post_date }}</li>
                     <p>-------------------------------</p>
                 {% empty %}
