@@ -9,7 +9,7 @@
     <h1>投稿一覧</h1>
     <ul>
         {% for post in parent_posts %} <!--viewsのindex()からparent_postを受け取っている!!-->
-            投稿者:<a href="/user/{{ post.author.id }}" class="user">@{{ post.author }}</a> <!--userクラスを定義した．-->
+            投稿者:<a href="/user/{{ post.author.id }}" class="user">@{{ post.user }}</a> <!--userクラスを定義した．-->
             <li>{{ post.content }}</li>
             <li>いいね数:{{ post.like_count }}</li>
             <li>投稿日時:{{ post.post_date }}</li>

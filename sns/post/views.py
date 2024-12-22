@@ -9,5 +9,5 @@ nested_replies:返信に対する返信
 """
 def index(request):
     #親ポストを全て表示．
-    parent_posts=Post.objects.filter(parent__isnull=True) #'_'を二つつけるのはdjangoORM(database操作)のルール!!フィールド(parent)と条件(isnull)を区別するため．
+    parent_posts=Post.objects.all()
     return render(request,'post/index.html',{'parent_posts':parent_posts}) #key:parent_postに対してvalue:parent_postを持つ辞書を返し，index.htmlにkeyを渡す．
