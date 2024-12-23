@@ -9,7 +9,7 @@ class Post(models.Model):
     comment_count=models.PositiveIntegerField(default=0) #返信数(階層が1つ下の返信のみをカウント)
     post_date=models.DateTimeField(auto_now_add=True) #投稿日時
     user=models.ForeignKey(
-        User, #一人のユーザが複数のpostを持つため，ForeignKeyを使用． #TODO:マイページにてuser.author.all()でユーザの投稿一覧を作成．
+        User, #一人のユーザが複数のpostを持つため，ForeignKeyを使用． #TODO:マイページにてpost.user.all()でユーザの投稿一覧を作成．
         related_name='posts',
         on_delete=models.CASCADE,
     )

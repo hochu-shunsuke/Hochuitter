@@ -19,5 +19,6 @@ from django.urls import path,include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('',include('post.urls'))
+    path('',include('post.urls')),
+    path('social/',include('social.urls')) #social関連のurlの先頭にはsocialをつける
 ]
