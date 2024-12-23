@@ -17,13 +17,14 @@
         <a href="#"><button>ログイン/新規登録</button></a>
         <a href=""><button>(開発用)ホームへ戻る</button></a>
     </div>
-    
+
     <div id="content">
         <h1>投稿一覧(開発段階では最大20表示(views/py))</h1>
+        <h1>{{ username }}のページ</h1> <!--viewsのuserpage()からusernameを受け取っている-->
         <div id="timeline">
             <ul>
-                {% for post in parent_posts %} <!--viewsのindex()からparent_postを受け取っている!!-->
-                    投稿者:<a href="{% url 'social:userpage' user_id=post.user.id %}" class="user">@{{ post.user }}</a> <!--userクラスを定義した．-->
+                {% for post in user_posts %} <!--viewsのuserpage()からuser_postを受け取っている!!-->
+                    投稿者:<a href="{% url 'social:userpage' user_id=post.user.id %}" class="user">@{{ post.user.username }}</a> <!--userクラスを定義した．-->
                     <li>{{ post.content }}</li>
                     <li>いいね数:{{ post.like_count }}</li>
                     <li>返信数:{{ post.comment_count }}(comment_countの処理が未実装)</li>
