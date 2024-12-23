@@ -7,9 +7,6 @@
     
 </head>
 <body>
-    {% extends 'base.html' %}
-    {% block content %}
-    <!--
     <div id="sidebar">
         <a href="{% url 'post:index' %}"><button>ホーム</button></a>
         <a href="{% url 'post:index' %}"><button>検索</button></a>
@@ -19,7 +16,6 @@
         <a href="{% url 'post:index' %}"><button>ポストする</button></a>
         <a href="{% url 'post:index' %}"><button>ログイン/新規登録</button></a>
     </div>
-    -->
 
     <div id="content">
         <h1>投稿一覧(開発段階では最大20表示(views/py))</h1>
@@ -39,7 +35,6 @@
             </ul>
         </div>
     </div>
-    {% endblock %}
 </body>
 </html>
 
