@@ -25,7 +25,7 @@ urlpatterns = [
     path('',include('post.urls')),
     path('social/',include('social.urls')), #social関連のurlの先頭にはsocialをつける
     path('login',auth_views.LoginView.as_view(
-        template_name='legistration/login.html',
+        template_name='registration/login.html',
         redirect_authenticated=True
     ),name='login'),
     path('logout',auth_views.LogoutView.as_view(next_page='/'),name='logput'),
