@@ -1,84 +1,21 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hochuitter</title>
-    
-</head>
-<body>
-    <div id="sidebar">
-        <a href="{% url 'post:index' %}"><button>ホーム</button></a>
-        <a href="{% url 'post:index' %}"><button>検索</button></a>
-        <a href="{% url 'post:index' %}"><button>メッセージ</button></a>
-        <a href="{% url 'post:index' %}"><button>ブックマーク</button></a>
-        <a href="{% url 'post:index' %}"><button>マイページ</button></a>
-        <a href="{% url 'post:index' %}"><button>ポストする</button></a>
-        <a href="{% url 'post:index' %}"><button>ログイン/新規登録</button></a>
+{% extends "base.html" %}
+
+{% block title %}投稿一覧{% endblock %}
+
+{% block content %}
+    <h1>投稿一覧(開発段階では最大20表示(views/py))</h1>
+    <div id="timeline">
+        <ul>
+            {% for post in parent_posts %}
+                投稿者:<a href="{% url 'social:userpage' user_id=post.user.id %}" class="user">@{{ post.user }}</a>
+                <li>{{ post.content }}</li>
+                <a href="{% url 'post:index' %}"><button>♡</button></a>{{ post.like_count }}
+                <a href="{% url 'post:index' %}"><button>💬</button></a>{{ post.comment_count }}
+                <li>投稿日時:{{ post.post_date }}</li>
+                <p>-------------------------------</p>
+            {% empty %}
+                <li>投稿がありません。</li>
+            {% endfor %}
+        </ul>
     </div>
-    <div id="content">
-        <h1>投稿一覧(開発段階では最大20表示(views/py))</h1>
-        <div id="timeline">
-            <ul>
-                {% for post in parent_posts %} <!--viewsのindex()からparent_postを受け取っている!!-->
-                    投稿者:<a href="{% url 'social:userpage' user_id=post.user.id %}" class="user">@{{ post.user }}</a> <!--userクラスを定義した．-->
-                    <li>{{ post.content }}</li>
-                    <li>いいね数:{{ post.like_count }}</li>
-                    <li>返信数:{{ post.comment_count }}(comment_countの処理が未実装)</li>
-                    <li>投稿日時:{{ post.post_date }}</li>
-                    <p>-------------------------------</p>
-                {% empty %}
-                    <li>投稿がありません。</li>
-                {% endfor %}
-            </ul>
-        </div>
-    </div>
-</body>
-</html>
-
-
-
-<style>
-    body {
-        margin: 0;
-        padding: 0;
-        font-family: Arial, sans-serif;
-        display: flex;
-    }
-    
-    #sidebar {
-        width: 200px;
-        background-color: #f4f4f4;
-        padding: 20px;
-        height: 100vh;
-    }
-    
-    #sidebar button {
-        display: block;
-        width: 100%;
-        margin-bottom: 10px;
-        padding: 10px;
-        background-color: #fff;
-        border: 1px solid #ddd;
-        cursor: pointer;
-    }
-    
-    #content {
-        flex: 1;
-        padding: 20px;
-    }
-
-    #timeline {
-        border: 1px solid #ddd;
-        padding: 10px;
-    }
-    
-    .user {
-        text-decoration: none;
-        color: #0077cc;
-    }
-    
-    .user:hover {
-        text-decoration: underline;
-    }
-</style>
+{% endblock %}
