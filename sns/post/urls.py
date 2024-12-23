@@ -1,11 +1,13 @@
 from django.urls import path
 from post import views
+from .views import PostCreateView
 
 app_name='post'
 
 main_urlpatterns=[
-    path('',views.index,name='index')
+    path('',views.index,name='index'),
     #nameを用いるとurlが変更されても動的にnameの値で対応できる!!
+    path('post/create/<int:user_id>',PostCreateView.as_view(),name='post_create'),
 ]
 
 api_urlpatterns=[
