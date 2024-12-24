@@ -1,15 +1,9 @@
 from django.urls import path
-from post import views
+from .views import create_post, index
 
 app_name='post'
 
-main_urlpatterns=[
-    path('',views.index,name='index')
-    #nameを用いるとurlが変更されても動的にnameの値で対応できる!!
+urlpatterns=[
+    path('',index,name='index'),
+    path('create/',create_post,name='create_post'), #投稿作成用のURL
 ]
-
-api_urlpatterns=[
-    #APIって何に使う？システム構成ちゃんと考えてから作成しよう
-]
-
-urlpatterns=main_urlpatterns+api_urlpatterns

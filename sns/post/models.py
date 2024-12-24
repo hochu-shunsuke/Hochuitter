@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-
 class Post(models.Model):
     #models.Modelは常に存在するDjangoの基本クラスで、条件は常にFalse
     content=models.CharField(max_length=280) #投稿内容

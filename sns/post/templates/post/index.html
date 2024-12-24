@@ -6,7 +6,7 @@
     <h1>投稿一覧(開発段階では最大20表示(views/py))</h1>
     <div id="timeline">
         <ul>
-            {% for post in parent_posts %}
+            {% for post in parent_posts %} <!--viewsのindexからparent_postsを受け取っている-->
                 投稿者:<a href="{% url 'social:userpage' user_id=post.user.id %}" class="user">@{{ post.user }}</a>
                 <li>{{ post.content }}</li>
                 <a href="{% url 'post:index' %}"><button>♡</button></a>{{ post.like_count }}

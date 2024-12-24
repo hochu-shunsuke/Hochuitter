@@ -1,7 +1,8 @@
 from django import forms
+from .models import Post
 
-"""
-https://docs.djangoproject.com/ja/5.1/topics/forms/
-このurlを参照.
-ユーザからのデータの受付に関するプログラムを定義する．
-"""
+class PostForm(forms.ModelForm):
+    class Meta:
+        model=Post #使用するモデル
+        fields=['content'] #フォームに含めるフィールド
+        #'content'フィールドのみを使用するため、他のフィールドは除外

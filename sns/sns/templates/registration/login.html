@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}ログイン{% endblock %}
+
+{% block content %}
+<div id="content">
+    <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        <div>
+            <label for="username">ユーザー名</label>
+            <input type="text" name="username" id="username" required>
+        </div>
+        <div>
+            <label for="password">パスワード</label>
+            <input type="password" name="password" id="password" required>
+        </div>
+        <button type="submit">ログイン</button>
+    </form>
+    <a href="{% url 'signup' %}">新規登録</a>
+</div>
+{% endblock %}
