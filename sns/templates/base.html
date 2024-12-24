@@ -11,8 +11,12 @@
         <a href="{% url 'post:index' %}"><button>検索</button></a>
         <a href="{% url 'post:index' %}"><button>メッセージ</button></a>
         <a href="{% url 'post:index' %}"><button>ブックマーク</button></a>
-        <a href="{% url 'post:index' %}"><button>マイページ</button></a>
-        <a href="{% url 'post:index' %}"><button>ポストする</button></a>
+        {% if user_id %}    <!--user_idがない（未認証ユーザの時はURLが生成されずindexがエラーになるのでif文を追加）-->
+            <a href="{% url 'social:userpage' user_id %}"><button>マイページ</button></a>
+        {% else %}
+            <button>マイページ（ログインが必要）</button>
+        {% endif %}
+        <a href="{% url 'post:create_post' %}"><button>ポストする</button></a>
         <a href="{% url 'login' %}"><button>ログイン/新規登録</button></a>
         <form method="post" action="{% url 'login' %}">
             {% csrf_token %}
@@ -26,17 +30,18 @@
             </div>
             <button type="submit">ログイン</button>
         </form>
-        <form method="post">
+        <form method="post" action="{% url 'signup'%}">
             {% csrf_token %}
             <input type="text" name="username" placeholder="ユーザー名" required>
             <input type="password" name="password1" placeholder="パスワード" required>
             <input type="password" name="password2" placeholder="パスワード確認" required>
             <button type="submit">作成</button>
         </form>
-        <form method="post" action="{% url 'logout' %}" style="display:inline;">
+        <form method="post" action="{% url 'logout' %}">
             {% csrf_token %}
             <button type="submit">ログアウト</button>
         </form>
+        <h3>@{{ user }}</h3> <!--ログインユーザをviewsから取得-->
     </div>
 
     <div id="content">

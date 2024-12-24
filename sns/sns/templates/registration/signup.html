@@ -4,7 +4,7 @@
 
 {% block content %}
 <div>
-    <form method="post">
+    <form method="post" action="{% url 'signup'%}">
         {% csrf_token %}
         <input type="text" name="username" placeholder="ユーザー名" required>
         <input type="password" name="password1" placeholder="パスワード" required>
