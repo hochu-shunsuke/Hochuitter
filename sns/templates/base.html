@@ -11,6 +11,7 @@
     <!--user_idの有無で表示するものを分けている!!!!!-->
 
     <div id="sidebar">
+        <h1>Hochuitter</h1>
         <a href="{% url 'post:index' %}"><button>ホーム</button></a>
         <a href="{% url 'post:index' %}"><button>検索</button></a>
         {% if user_id %}    <!--user_idがない（未認証ユーザの時はURLが生成されずindexがエラーになるのでif文を追加）-->
