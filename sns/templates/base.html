@@ -13,7 +13,30 @@
         <a href="{% url 'post:index' %}"><button>ブックマーク</button></a>
         <a href="{% url 'post:index' %}"><button>マイページ</button></a>
         <a href="{% url 'post:index' %}"><button>ポストする</button></a>
-        <a href="{% url 'post:index' %}"><button>ログイン/新規登録</button></a>
+        <a href="{% url 'login' %}"><button>ログイン/新規登録</button></a>
+        <form method="post" action="{% url 'login' %}">
+            {% csrf_token %}
+            <div>
+                <label for="username">ユーザー名</label>
+                <input type="text" name="username" id="username" required>
+            </div>
+            <div>
+                <label for="password">パスワード</label>
+                <input type="password" name="password" id="password" required>
+            </div>
+            <button type="submit">ログイン</button>
+        </form>
+        <form method="post">
+            {% csrf_token %}
+            <input type="text" name="username" placeholder="ユーザー名" required>
+            <input type="password" name="password1" placeholder="パスワード" required>
+            <input type="password" name="password2" placeholder="パスワード確認" required>
+            <button type="submit">作成</button>
+        </form>
+        <form method="post" action="{% url 'logout' %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit">ログアウト</button>
+        </form>
     </div>
 
     <div id="content">

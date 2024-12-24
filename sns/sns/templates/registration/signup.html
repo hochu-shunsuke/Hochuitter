@@ -1,8 +1,9 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+
+{% block title %}アカウントを作成{% endblock %}
 
 {% block content %}
 <div>
-    <h1>アカウント作成</h1>
     <form method="post">
         {% csrf_token %}
         <input type="text" name="username" placeholder="ユーザー名" required>

@@ -1,9 +1,10 @@
 {% extends "base.html" %}
 
+{% block title %}ログイン{% endblock %}
+
 {% block content %}
 <div id="content">
-    <h1>ログイン</h1>
-    <form method="post">
+    <form method="post" action="{% url 'login' %}">
         {% csrf_token %}
         <div>
             <label for="username">ユーザー名</label>
