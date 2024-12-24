@@ -11,3 +11,7 @@
 </form>
 <a href="{% url 'post:index' %}">戻る</a>
 {% endblock %}
+
+{% block user_info %}
+    <p>ユーザ:{{ user }}</p>
+{% endblock %}

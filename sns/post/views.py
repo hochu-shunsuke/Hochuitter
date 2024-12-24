@@ -24,16 +24,20 @@ def index(request):
         'user_id':user_id
         })
 
-@login_required #ログアウト時はログインページにリダイレクトされる!!!!!
+@login_required #Djangoのデコレータ.ログアウト時はログインページにリダイレクトされる!!!!!
 def create_post(request):
-    if request.method=='POST':
-        if request.user.is_authenticated:
-            form=PostForm(request.POST)
-            if form.is_valid():
-                post=form.save(commit=False) #一時的に保存
-                post.user=request.user #現在のユーザ
-                post.save() #データベースに保存
-                return redirect('post:index') #投稿後にリダイレクト
+    user=request.user
+    if request.method=='POST': #HTTPリクエストの種類を確認し適切に処理
+        form=PostForm(request.POST)
+        if form.is_valid(): #フォームが有効であるか確認
+            post=form.save(commit=False) #一時的に保存
+            post.user=request.user #現在のユーザ
+            post.save() #データベースに保存
+            return redirect('post:index') #投稿後にリダイレクト
     else:
         form=PostForm() #GETリクエストの場合は空のフォームを作成
-    return render(request,'post/create.html',{'form':form}) #フォームをテンプレートに渡す
+    return render(request,'post/create.html',
+                  {'form':form,
+                   'user':user,
+                   'user_id':user.id} #実際にはcreate.htmlでextendしているbase.htmlの中で使用している
+                  ) #フォームをテンプレートに渡す

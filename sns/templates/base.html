@@ -24,7 +24,6 @@
                 {% csrf_token %}
                 <button type="submit">ログアウト</button>
             </form>
-            <h3>@{{ user }}</h3> <!--ログインユーザ名をviewsから取得-->
         {% else %}
         <form method="post" action="{% url 'login' %}">
             {% csrf_token %}
@@ -36,7 +35,6 @@
                 <label for="password">パスワード</label>
                 <input type="password" name="password" placeholder="忘れてたら悲しいな" id="password" required>
             </div>
-            <small>簡単なのはdjangoが拒否.アラートはまた追加</small> <!--小さい文字-->
             <button type="submit">ログイン</button>
         </form>
         <form method="post" action="{% url 'signup'%}">
@@ -47,8 +45,8 @@
             <small>簡単なのはdjangoが拒否.アラートはまた追加</small> <!--小さい文字-->
             <button type="submit">新規登録</button>
         </form>
-        ログインしてみよう!
         {% endif %}
+        <h3>@{{ user }}</h3> <!--ログインユーザ名をviewsから取得-->
     </div>
 
     <div id="content">
