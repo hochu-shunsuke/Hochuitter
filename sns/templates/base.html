@@ -22,7 +22,7 @@
             <!--user_idがない（未認証ユーザの時はURLが生成されずindexがエラーになる-->
             <form method="post" action="{% url 'logout' %}">
                 {% csrf_token %}
-                <button type="submit">ログアウト</button>
+                <button type="submit" style="color:red">ログアウト</button>
             </form>
         {% else %}
         <form method="post" action="{% url 'login' %}">
@@ -46,7 +46,7 @@
             <button type="submit">新規登録</button>
         </form>
         {% endif %}
-        <h3>@{{ user }}</h3> <!--ログインユーザ名をviewsから取得-->
+        <h3>{{ user }}</h3> <!--ログインユーザ名をviewsから取得-->
     </div>
 
     <div id="content">
