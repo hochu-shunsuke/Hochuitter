@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ post }}へのコメント投稿{% endblock %}
+
+{% block content %}
+この下に親ポストを表示．
+{{ post.content }}
+この上に親ポストがなければ失敗
+<h1>新規投稿</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}  <!-- フォームを表示 -->
+    <button type="submit">投稿する</button>
+</form>
+<a href="{% url 'post:index' %}">戻る</a>
+{% endblock %}
+
+{% block user_info %}
+    <p>ユーザ:{{ user }}</p>
+{% endblock %}

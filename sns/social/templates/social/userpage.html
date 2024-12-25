@@ -7,7 +7,7 @@
     <div id="timeline">
         <ul>
             {% for post in user_posts %}
-                投稿者:<a href="{% url 'social:userpage' user_id=post.user.id %}" class="user">@{{ post.user.username }}</a>
+                投稿者:<a href="{% url 'social:userpage' user_id %}" class="user">@{{ post.user.username }}</a>
                 <li>{{ post.content }}</li>
                 <a href="{% url 'post:index' %}"><button>♡</button></a>{{ post.like_count }}
                 <a href="{% url 'post:index' %}"><button>💬</button></a>{{ post.comment_count }}
