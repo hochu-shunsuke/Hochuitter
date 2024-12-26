@@ -13,11 +13,11 @@
     <div id="sidebar">
         <h1>Hochuitter</h1>
         <a href="{% url 'post:index' %}"><button>ホーム</button></a>
-        <a href="{% url 'post:index' %}"><button>検索</button></a>
+        <!--<a href="{% url 'post:index' %}"><button>検索</button></a>-->
         {% if user_id %}    <!--user_idがない（未認証ユーザの時はURLが生成されずindexがエラーになるのでif文を追加）-->
             <a href="{% url 'post:create_post' %}"><button>ポストする</button></a>
-            <a href="{% url 'post:index' %}"><button>メッセージ</button></a>
-            <a href="{% url 'post:index' %}"><button>ブックマーク</button></a>
+            <!--<a href="{% url 'post:index' %}"><button>メッセージ</button></a>-->
+            <!--<a href="{% url 'post:index' %}"><button>ブックマーク</button></a>-->
             <a href="{% url 'social:userpage' user_id %}"><button>マイページ</button></a>
             <!--user_idがない（未認証ユーザの時はURLが生成されずindexがエラーになる-->
             <form method="post" action="{% url 'logout' %}">
