@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>投稿一覧(開発段階では最大20表示(views/py))</h1>
+    <h1>投稿一覧</h1>
+    <h5>投稿日順に新しいものから50個表示されています!</h5>
     <div id="timeline">
         <ul>
             {% for post in parent_posts %} <!--viewsのindexからparent_postsを受け取っている-->

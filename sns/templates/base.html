@@ -42,7 +42,7 @@
             <input type="text" name="username" placeholder="ユーザー名" required>
             <input type="password" name="password1" placeholder="簡単なパスワードは❌" required>
             <input type="password" name="password2" placeholder="もう一回パスワードを!" required>
-            <small>簡単なのはdjangoが拒否.アラートはまた追加</small> <!--小さい文字-->
+            <!--<small>簡単なのはdjangoが拒否.アラートはまた追加</small>小さい文字-->
             <button type="submit">新規登録</button>
         </form>
         {% endif %}
@@ -82,6 +82,7 @@
             background-color: #f4f4f4;
             padding: 20px;
             height: 100vh;
+            position: fixed;
         }
 
         body.dark-mode #sidebar{
@@ -101,6 +102,7 @@
         #content {
             flex: 1;
             padding: 20px;
+            margin-left:240px;
         }
 
         #timeline {
@@ -112,7 +114,7 @@
             width: 200px;
             background-color: #707b7f;
             padding: 20px;
-            height: 100vh;
+            height: max-content;
         }
         
         .user {
