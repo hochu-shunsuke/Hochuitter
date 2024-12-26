@@ -53,6 +53,17 @@
         {% block content %}{% endblock %}
     </div>
 
+    <div id="theme-toggle">
+        <botton id="dark-mode-toggle">明暗テーマ切り替え</button>
+    </div>
+
+    <script>
+        const toggleButton=document.getElementById('dark-mode-toggle');
+        toggleButton.addEventListener('click',()=>{
+            document.body.classList.toggle('dark-mode');
+        })
+    </script>
+
     <style>
         body {
             margin: 0;
@@ -60,12 +71,21 @@
             font-family: Arial, sans-serif;
             display: flex;
         }
+
+        body.dark-mode {
+            background-color: #333;
+            color: #fff;
+        }
         
         #sidebar {
             width: 200px;
             background-color: #f4f4f4;
             padding: 20px;
             height: 100vh;
+        }
+
+        body.dark-mode #sidebar{
+            background-color: #444;
         }
         
         #sidebar button {
@@ -86,6 +106,13 @@
         #timeline {
             border: 1px solid #ddd;
             padding: 10px;
+        }
+
+        #theme-toggle {
+            width: 200px;
+            background-color: #707b7f;
+            padding: 20px;
+            height: 100vh;
         }
         
         .user {
