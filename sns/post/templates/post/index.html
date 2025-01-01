@@ -14,6 +14,7 @@
                 </button>
                 <a href="{% url 'post:index' %}"><button>💬</button></a>{{ post.comment_count }}
                 <div>投稿日時: {{ post.post_date }}</div>
+
                 <p>----------------------------------------------------------------------------------------------</p>
             </li>
         {% empty %}

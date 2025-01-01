@@ -9,6 +9,7 @@
                 <li>{{ post.content }}</li>
                 <a href="{% url 'post:index' %}"><button>♡</button></a>{{ post.like_count }}
                 <a href="{% url 'post:index' %}"><button>💬</button></a>{{ post.comment_count }}
+                <a href="{% url 'post:index' %}"><button>🔖</button></a>ブックマークボタン😼
                 <li>投稿日時:{{ post.post_date }}</li>
                 <p>-------------------------------</p>
             {% empty %}
