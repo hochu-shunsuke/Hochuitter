@@ -10,8 +10,12 @@
             投稿者: <a href="{% url 'social:userpage' user_id=post.user.id %}" class="user">@{{ post.user }}</a>
             <li>
                 <div>{{ post.content }}</div>
-                <button class="like-button" data-post-id="{{ post.id }}">♡<span class="like-count">{{ post.like_count }}</span>
-                </button>
+                {% if user_id %} <!--ログイン中のユーザーのみいいねボタンを表示-->
+                    <button class="like-button" data-post-id="{{ post.id }}">♡<span class="like-count">{{ post.like_count }}</span>
+                    </button>
+                {% else %}
+                    <button>♡<span class="like-count">{{ post.like_count }}</span></button>
+                {% endif %}
                 <a href="{% url 'post:index' %}"><button>💬</button></a>{{ post.comment_count }}
                 <div>投稿日時: {{ post.post_date }}</div>
 
