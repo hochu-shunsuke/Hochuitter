@@ -12,6 +12,7 @@ class Post(models.Model):
         related_name='posts',
         on_delete=models.CASCADE,
     )
+    liked_users=models.ManyToManyField(User,related_name='liked_post',null=True,blank=True) #いいねしたユーザ
     
     def __str__(self):
         return self.content

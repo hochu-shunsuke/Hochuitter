@@ -4,6 +4,7 @@ from django.urls import reverse_lazy #処理成功後の遷移先urlを引数に
 from .form import PostForm
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required #ログイン状態でない場合はログインページにリダイレクトされる
+from django.http import JsonResponse #Ajax用のレスポンス(非同期処理)を返すために必要
 
 
 #url.pyでurl作成したあとで，views.pyに該当の関数を作成しreturn renderでhtmlなり関数の戻り値なりを返すかな
@@ -41,3 +42,15 @@ def create_post(request):
                    'user':user,
                    'user_id':user.id} #実際にはcreate.htmlでextendしているbase.htmlの中で使用している
                   ) #フォームをテンプレートに渡す
+
+@login_required
+def toggle_like(request,post_id):
+    post=Post.obujects.get(id=post_id)
+    if request.user in post.liked_users.all(): #postのliked_usersリストにある場合
+        post.liked_users.remove(request.user) #いいねを削除
+        post.like_count-=1 #いいね数を-1
+    else:
+        post.liked_users.add(request.user) #いいねを追加
+        post.like_count+=1
+    post.save()
+    return JsonResponse({'like_count':post.like_count}) #Ajax用のレスポンスを返す
