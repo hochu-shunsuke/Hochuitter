@@ -12,7 +12,8 @@ class Post(models.Model):
         related_name='posts',
         on_delete=models.CASCADE,
     )
-    liked_users=models.ManyToManyField(User,related_name='liked_post',null=True,blank=True) #いいねしたユーザ
+    liked_users=models.ManyToManyField(User,related_name='liked_post',blank=True) #いいねしたユーザ
+    #null has no effect on ManyToManyField(ManyToManyFieldにはnullは影響しない)
     
     def __str__(self):
         return self.content
