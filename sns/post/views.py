@@ -44,8 +44,8 @@ def create_post(request):
                   ) #フォームをテンプレートに渡す
 
 @login_required
-def toggle_like(request,post_id):
-    post=Post.obujects.get(id=post_id)
+def toggle_like(request,post_id): #ここではユーザ一人単位のいいね数を更新する
+    post=Post.objects.get(id=post_id)
     if request.user in post.liked_users.all(): #postのliked_usersリストにある場合
         post.liked_users.remove(request.user) #いいねを削除
         post.like_count-=1 #いいね数を-1

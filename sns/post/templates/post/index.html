@@ -1,27 +1,4 @@
-{% extends "base.html" %}
-
-{% block content %}
-    <h1>投稿一覧</h1>
-    <h5>投稿日順に新しいものから50個表示されています!</h5>
-    <div id="timeline">
-        <ul>
-            {% for post in parent_posts %} <!--viewsのindexからparent_postsを受け取っている-->
-                投稿者:<a href="{% url 'social:userpage' user_id=post.user.id %}" class="user">@{{ post.user }}</a>
-                <li>{{ post.content }}</li>
-                <a href="{% url 'post:toggle_like' %}"><button>♡</button></a>{{ post.like_count }}
-                <a href="{% url 'post:index' %}"><button>💬</button></a>{{ post.comment_count }}
-                <li>投稿日時:{{ post.post_date }}</li>
-                <p>----------------------------------------------------------------------------------------------</p>
-            {% empty %}
-                <li>投稿がありません。</li>
-            {% endfor %}
-        </ul>
-    </div>
-{% endblock %}
-
-
 <!--このようにpost_idをAJAXで取得するとurlを正しく生成できる-->
-<!--
 {% extends "base.html" %}
 
 {% block content %}
@@ -30,11 +7,10 @@
     <div id="timeline">
         <ul>
             {% for post in parent_posts %}
+            投稿者: <a href="{% url 'social:userpage' user_id=post.user.id %}" class="user">@{{ post.user }}</a>
             <li>
-                投稿者: <a href="{% url 'social:userpage' user_id=post.user.id %}" class="user">@{{ post.user }}</a>
                 <div>{{ post.content }}</div>
-                <button class="like-button" data-post-id="{{ post.id }}">
-                    ♡ <span class="like-count">{{ post.like_count }}</span>
+                <button class="like-button" data-post-id="{{ post.id }}">♡<span class="like-count">{{ post.like_count }}</span>
                 </button>
                 <a href="{% url 'post:index' %}"><button>💬</button></a>{{ post.comment_count }}
                 <div>投稿日時: {{ post.post_date }}</div>
@@ -47,10 +23,12 @@
 </div>
 
 <script>
+    //いいねボタンの関数
     document.querySelectorAll('.like-button').forEach(button => {
         button.addEventListener('click', function() {
             const postId = this.getAttribute('data-post-id');
-            fetch(`/post/${postId}/toggle_like/`, {
+            //ここでfetchに対してpostidに応じて動的にURLを参照させる
+            fetch(`/${postId}/toggle/like/`, {
                 method: 'POST',
                 headers: {
                     'X-CSRFToken': '{{ csrf_token }}', // CSRFトークンを追加
@@ -59,11 +37,9 @@
             })
             .then(response => response.json())
             .then(data => {
-                this.querySelector('.like-count').textContent = data.like_count; // いいね数を更新
+                this.querySelector('.like_count').textContent = data.like_count; // いいね数を更新
             });
         });
     });
 </script>
 {% endblock %}
-
--->
