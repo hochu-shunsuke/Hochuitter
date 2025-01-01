@@ -12,17 +12,10 @@ class Post(models.Model):
         related_name='posts',
         on_delete=models.CASCADE,
     )
+    liked_users=models.ManyToManyField(User,related_name='liked_post',null=True,blank=True) #いいねしたユーザ
     
     def __str__(self):
         return self.content
-    
-    def update_like_count(self,number):
-        if self.like_count+number>=0:
-            self.like_count+=number
-            self.save()
-            return True
-        else:
-            return False
             
     class Meta:
         ordering=['-post_date'] #postを投稿順に並び替え
@@ -60,14 +53,6 @@ class Comment(models.Model):
     
     def __str__(self):
         return self.content if self.content else "No content"
-    
-    def update_like_count(self,number):
-        if self.like_count+number>=0:
-            self.like_count+=number
-            self.save()
-            return True
-        else:
-            return False
     
     class Meta:
         ordering=['-like_count','-post_date'] # 修正：投稿日時が新しい順に
