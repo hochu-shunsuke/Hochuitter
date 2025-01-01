@@ -14,3 +14,8 @@ def userpage(request,user_id): #requestにはurls.py見るとuser_idが入って
         'user_id':user.id
 })
 #@login_requredを用いて,userpageが呼び出されたときに閲覧するユーザページのユーザidとログイン中のidが等しい時のみにユーザページにここはあなたのサイトです！とか表示できるし，そこからプロフ編集をできる
+
+"""
+これもindexに値を渡せば表示可能である.templatesの統合をしていいね機能やコメント機能のスケーラビリティ向上をはかる.
+タイトルまで値で渡せば全然簡単にできそう
+"""
