@@ -2,49 +2,56 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>投稿一覧</h1>
-    <h5>投稿日順に新しいものから50個表示されています!</h5>
+    <h1>{{ page_title }}</h1>
+    {% if not user_id %}
+        <h5>投稿日順に新しいものから50個表示されています!</h5>
+    {% endif %}
     <div id="timeline">
         <ul>
             {% for post in parent_posts %}
             投稿者: <a href="{% url 'social:userpage' user_id=post.user.id %}" class="user">@{{ post.user }}</a>
             <li>
                 <div>{{ post.content }}</div>
-                {% if user_id %} <!--ログイン中のユーザーのみいいねボタンを表示-->
-                    <button class="like-button" data-post-id="{{ post.id }}">♡<span class="like-count">{{ post.like_count }}</span>
-                    </button>
+                {% if user_id %} <!--ログイン中のユーザーのみ機能するいいねボタンを表示-->
+                    <button class="like-button" data-post-id="{{ post.id }}">♡</button>
+                    <span class="like-count" data-post-id="{{ post.id }}">{{ post.like_count }}</span>
                 {% else %}
-                    <button>♡<span class="like-count">{{ post.like_count }}</span></button>
+                    <button disabled>♡</button>
+                    <span class="like-count">{{ post.like_count }}</span>
                 {% endif %}
                 <a href="{% url 'post:index' %}"><button>💬</button></a>{{ post.comment_count }}
+                {% if user_id %} <!--ログイン中のユーザのみブックマークボタンを表示-->
+                    <a href="{% url 'post:index' %}"><button>🔖</button></a>ブックマークボタン😼
+                {% endif %}
                 <div>投稿日時: {{ post.post_date }}</div>
 
                 <p>----------------------------------------------------------------------------------------------</p>
             </li>
-        {% empty %}
+            {% empty %}
             <li>投稿がありません。</li>
-        {% endfor %}
-    </ul>
-</div>
+            {% endfor %}
+        </ul>
+    </div>
 
-<script>
-    //いいねボタンの関数
-    document.querySelectorAll('.like-button').forEach(button => {
-        button.addEventListener('click', function() {
-            const postId = this.getAttribute('data-post-id');
-            //ここでfetchに対してpostidに応じて動的にURLを参照させる
-            fetch(`/${postId}/toggle/like/`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': '{{ csrf_token }}', // CSRFトークンを追加
-                    'Content-Type': 'application/json',
-                },
-            })
-            .then(response => response.json())
-            .then(data => {
-                this.querySelector('.like-count').textContent = data.like_count; // いいね数を更新
+    <script>
+        //いいねボタンの関数
+        document.querySelectorAll('.like-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const postId = this.getAttribute('data-post-id');
+                //ここでfetchに対してpostidに応じて動的にURLを参照させる
+                fetch(`/${postId}/toggle/like/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}', // CSRFトークンを追加
+                        'Content-Type': 'application/json',
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // ボタンに対応するカウンターを更新
+                    document.querySelector(`.like-count[data-post-id="${postId}"]`).textContent = data.like_count;
+                });
             });
         });
-    });
-</script>
+    </script>
 {% endblock %}
