@@ -1,4 +1,4 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Post
 from django.urls import reverse_lazy #処理成功後の遷移先urlを引数に持つ,『urlの遅延評価』というらしい．
 from .form import PostForm
@@ -14,16 +14,27 @@ parent_posts:親ポスト
 child_posts:返信
 nested_replies:返信に対する返信
 """
-def index(request):
-    #親ポストを全て表示．
-    user=request.user #Django標準の認証システムによりログインユーザを取得
-    user_id=request.user.id
-    parent_posts=Post.objects.all()[:50] #最大数は開発段階ではとりあえず50
-    return render(request,'post/index.html',{
-        'username':user.username,
-        'parent_posts':parent_posts,#key:parent_postに対してvalue:parent_postを持つ辞書を返し，index.htmlにkeyを渡す．
-        'user_id':user_id
-        })
+def index(request, user_id=None):
+    # ログインユーザーの情報を取得
+    current_user = request.user
+    current_user_id = current_user.id if current_user.is_authenticated else None
+    
+    if user_id:
+        # ユーザーページの場合は特定ユーザーの投稿のみ表示
+        target_user = get_object_or_404(User, pk=user_id)
+        posts = Post.objects.filter(user=target_user)[:50]
+        page_title = f"{target_user.username}のページ"
+    else:
+        # 通常のインデックスページの場合は全投稿を表示
+        posts = Post.objects.all()[:50]
+        page_title = "投稿一覧"
+
+    return render(request, 'post/index.html', {
+        'username': current_user.username if current_user.is_authenticated else None,
+        'parent_posts': posts,
+        'user_id': current_user_id,
+        'page_title': page_title
+    })
 
 @login_required #Djangoのデコレータ.ログアウト時はログインページにリダイレクトされる!!!!!
 def create_post(request):

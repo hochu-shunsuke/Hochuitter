@@ -2,8 +2,10 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>投稿一覧</h1>
-    <h5>投稿日順に新しいものから50個表示されています!</h5>
+    <h1>{{ page_title }}</h1>
+    {% if not user_id %}
+        <h5>投稿日順に新しいものから50個表示されています!</h5>
+    {% endif %}
     <div id="timeline">
         <ul>
             {% for post in parent_posts %}

@@ -1,5 +1,5 @@
 from django.urls import path
-from social import views
+from post import views
 
 app_name='social'
 
@@ -9,7 +9,7 @@ path('social/',include('social.urls'))
 と設定したため,socialアプリのurlの先頭には social/ がつくよ!!!
 """
 main_urlpatterns=[
-    path('userpage/<int:user_id>/',views.userpage,name='userpage')
+    path('userpage/<int:user_id>/', views.index, name='userpage')
     #nameを用いるとurlが変更されても動的にnameの値で対応できる!!
 ]
 
