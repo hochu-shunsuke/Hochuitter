@@ -25,36 +25,17 @@
                 <button type="submit" style="color:red">ログアウト</button>
             </form>
         {% else %}
-        <form method="post" action="{% url 'login' %}">
-            {% csrf_token %}
-            <div>
-                <label for="username">ユーザー名</label>
-                <input type="text" name="username" placeholder="覚えてるかな？" id="username" required>
-            </div>
-            <div>
-                <label for="password">パスワード</label>
-                <input type="password" name="password" placeholder="忘れてたら悲しいな" id="password" required>
-            </div>
-            <button type="submit">ログイン</button>
-        </form>
-        <form method="post" action="{% url 'signup'%}">
-            {% csrf_token %}
-            <input type="text" name="username" placeholder="ユーザー名" required>
-            <input type="password" name="password1" placeholder="簡単なパスワードは❌" required>
-            <input type="password" name="password2" placeholder="もう一回パスワードを!" required>
-            <small>簡単なのはdjangoが拒否.アラートはまた追加</small><!--小さい文字-->
-            <button type="submit">新規登録</button>
-        </form>
+            <a href="{% url 'login' %}"><button>ログイン</button></a>
+            <a href="{% url 'signup' %}"><button>新規登録</button></a>
         {% endif %}
         <h3>{{ user }}</h3> <!--ログインユーザ名をviewsから取得-->
+        <div class="theme-toggle">
+            <button id="dark-mode-toggle">テーマ切替</button>
+        </div>
     </div>
 
     <div id="content">
         {% block content %}{% endblock %}
-    </div>
-
-    <div id="theme-toggle">
-        <botton id="dark-mode-toggle">明暗テーマ切り替え</button>
     </div>
 
     <script>
@@ -84,10 +65,20 @@
             padding: 20px;
             height: 100vh;
             position: fixed;
+            display: flex;
+            flex-direction: column;
         }
 
-        body.dark-mode #sidebar{
+        body.dark-mode #sidebar {
             background-color: #444;
+        }
+
+        #sidebar h1 {
+            margin: 0 0 20px 0;
+        }
+
+        #sidebar h3 {
+            margin: 20px 0;
         }
         
         #sidebar button {
@@ -97,25 +88,41 @@
             padding: 10px;
             background-color: #fff;
             border: 1px solid #ddd;
+            border-radius: 4px;
             cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        #sidebar button:hover {
+            background-color: #e9ecef;
         }
         
         #content {
             flex: 1;
             padding: 20px;
-            margin-left:240px;
+            margin-left: 220px;
         }
 
         #timeline {
             border: 1px solid #ddd;
             padding: 10px;
         }
+        
+        .theme-toggle {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
 
-        #theme-toggle {
-            width: 200px;
-            background-color: #707b7f;
-            padding: 20px;
-            height: max-content;
+        .theme-toggle button {
+            background-color: transparent !important;
+            color: #666;
+            border: 1px solid #ddd !important;
+        }
+
+        body.dark-mode .theme-toggle button {
+            color: #fff;
+            border-color: #555 !important;
         }
         
         .user {

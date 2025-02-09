@@ -24,14 +24,18 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include('post.urls')),
     path('social/',include('social.urls')),#social関連のurlの先頭にはsocialをつける
-    path('login',auth_views.LoginView.as_view(
-        redirect_authenticated_user=True #ログイン済みユーザに対してはルートディレクトリへリダイレクトする!!!!
-    ),name='login'),
-    path('logout/',auth_views.LogoutView.as_view(
-        next_page=''
-    ),name='logout'),
-    path('signup/',CreateView.as_view(
+    path('login', auth_views.LoginView.as_view(
+        redirect_authenticated_user=True,
+        template_name='registration/login.html',
+        extra_context={'sidebar_form': True}
+    ), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(
+        next_page='/'
+    ), name='logout'),
+    path('signup/', CreateView.as_view(
+        template_name='registration/signup.html',
         form_class=UserCreationForm,
-        success_url='/'
-    ),name='signup'),
+        success_url='/',
+        extra_context={'sidebar_form': True}
+    ), name='signup'),
 ]
