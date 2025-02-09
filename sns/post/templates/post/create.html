@@ -1,15 +1,183 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>新規投稿</h1>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}  <!-- フォームを表示 -->
-    <button type="submit">投稿する</button>
-</form>
-<a href="{% url 'post:index' %}">戻る</a>
-{% endblock %}
+<div class="page-header">
+    <h1>新規投稿</h1>
+</div>
 
-{% block user_info %}
-    <p>ユーザ:{{ user }}</p>
+<div class="post-form-container">
+    <form method="post" class="post-form">
+        {% csrf_token %}
+        <div class="form-group">
+            <textarea 
+                name="{{ form.content.name }}" 
+                id="{{ form.content.id_for_label }}" 
+                placeholder="いまどうしてる？"
+                class="post-textarea"
+                maxlength="500"
+                rows="4"
+            ></textarea>
+            <div class="form-footer">
+                <span class="character-counter">0 / 500</span>
+                <div class="form-actions">
+                    <a href="{% url 'post:index' %}" class="button cancel-button">キャンセル</a>
+                    <button type="submit" class="button submit-button">投稿する</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<style>
+    .page-header {
+        margin-bottom: var(--post-spacing);
+    }
+
+    .page-header h1 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .post-form-container {
+        background-color: var(--bg-sidebar);
+        border: 1px solid var(--border-color);
+        border-radius: 1rem;
+        overflow: hidden;
+    }
+
+    .post-form {
+        padding: var(--post-spacing);
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: var(--post-spacing);
+    }
+
+    .post-textarea {
+        width: 100%;
+        min-height: 180px;
+        padding: var(--post-spacing);
+        background-color: var(--bg-main);
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
+        border-radius: 0.75rem;
+        resize: vertical;
+        font-size: 1.125rem;
+        line-height: 1.6;
+        transition: all var(--transition-base);
+        font-family: inherit;
+        box-sizing: border-box;
+    }
+
+    .post-textarea:focus {
+        outline: none;
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 2px var(--accent-color-alpha);
+    }
+
+    .post-textarea::placeholder {
+        color: var(--text-secondary);
+    }
+
+    .form-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: var(--post-spacing);
+        border-top: 1px solid var(--border-color);
+    }
+
+    .character-counter {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        font-weight: 500;
+    }
+
+    .character-counter.warning {
+        color: #e11d48;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 9999px;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all var(--transition-base);
+        text-decoration: none;
+    }
+
+    .submit-button {
+        background-color: var(--accent-color);
+        color: white;
+        min-width: 100px;
+    }
+
+    .submit-button:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+    }
+
+    .submit-button:active {
+        transform: translateY(0);
+    }
+
+    .cancel-button {
+        background-color: var(--hover-bg);
+        color: var(--text-primary);
+    }
+
+    .cancel-button:hover {
+        background-color: var(--border-color);
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const textarea = document.querySelector('.post-textarea');
+        const counter = document.querySelector('.character-counter');
+        
+        function updateCounter() {
+            const length = textarea.value.length;
+            counter.textContent = `${length} / 500`;
+            
+            if (length >= 450) {
+                counter.classList.add('warning');
+            } else {
+                counter.classList.remove('warning');
+            }
+        }
+
+        function autoResize() {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.max(180, textarea.scrollHeight) + 'px';
+        }
+
+        textarea.addEventListener('input', function() {
+            updateCounter();
+            autoResize();
+        });
+
+        // 初期化
+        updateCounter();
+        autoResize();
+
+        // フォーカス時に自動的にカーソルを合わせる
+        textarea.focus();
+    });
+</script>
 {% endblock %}

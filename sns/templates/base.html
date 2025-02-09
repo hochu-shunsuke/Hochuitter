@@ -1,148 +1,289 @@
-<!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Hochuitter{% endblock %}</title>
-</head>
-<body>
-
-    <!--user_idがある：認証済みユーザ(ログイン中)/ない:未認証ユーザ(ログアウト状態かアカウント未登録)-->
-    <!--user_idの有無で表示するものを分けている!!!!!-->
-
-    <div id="sidebar">
-        <div class="sidebar-content">
-            <h1>Hochuitter</h1>
-            <a href="{% url 'post:index' %}"><button>ホーム</button></a>
-            <a href="{% url 'post:index' %}"><button>検索</button></a>
-            {% if user_id %}    <!--user_idがない（未認証ユーザの時はURLが生成されずindexがエラーになるのでif文を追加）-->
-                <a href="{% url 'post:create_post' %}"><button>ポストする</button></a>
-                <a href="{% url 'post:index' %}"><button>メッセージ</button></a>
-                <a href="{% url 'post:index' %}"><button>ブックマーク</button></a>
-                <a href="{% url 'social:userpage' user_id %}"><button>マイページ</button></a>
-                <!--user_idがない（未認証ユーザの時はURLが生成されずindexがエラーになる-->
-                <form method="post" action="{% url 'logout' %}">
-                    {% csrf_token %}
-                    <button type="submit" style="color:red">ログアウト</button>
-                </form>
-            {% else %}
-                <a href="{% url 'login' %}"><button>ログイン</button></a>
-                <a href="{% url 'signup' %}"><button>新規登録</button></a>
-            {% endif %}
-            <h3>{{ user }}</h3> <!--ログインユーザ名をviewsから取得-->
-        </div>
-        <div class="theme-toggle">
-            <button id="dark-mode-toggle">💡テーマ切替</button>
-        </div>
-    </div>
-
-    <div id="content">
-        {% block content %}{% endblock %}
-    </div>
-
-    <script>
-        //明暗テーマ切り替え
-        const toggleButton=document.getElementById('dark-mode-toggle');
-        toggleButton.addEventListener('click',()=>{
-            document.body.classList.toggle('dark-mode');
-        })
-    </script>
-
     <style>
+        /* カラーシステム */
+        :root {
+            --bg-main: #f9f9f9;
+            --bg-sidebar: #ffffff;
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --border-color: #dddddd;
+            --hover-bg: #f5f5f5;
+            --accent-color: #1a91da;
+            --danger-color: #dc2626;
+            --accent-color-alpha: rgba(26, 145, 218, 0.2);
+            --transition-base: 0.2s ease;
+
+            /* レイアウトサイズ */
+            --sidebar-width: 280px;
+            --main-width: 800px;
+            --content-padding: 1.5rem;
+            --post-spacing: 1.5rem;
+        }
+
+        /* ダークモード */
+        .dark-mode {
+            --bg-main: #000000;
+            --bg-sidebar: #15202b;
+            --text-primary: #ffffff;
+            --text-secondary: #8899a6;
+            --border-color: #38444d;
+            --hover-bg: #1c2732;
+            --accent-color: #1d9bf0;
+            --danger-color: #ef4444;
+        }
+
         body {
             margin: 0;
             padding: 0;
-            font-family: Arial, sans-serif;
-            display: flex;
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            min-height: 100vh;
+            transition: background-color var(--transition-base), color var(--transition-base);
         }
 
-        body.dark-mode {
-            background-color: #333;
-            color: #fff;
+        .layout-container {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            min-height: 100vh;
         }
-        
-        #sidebar {
-            width: 200px;
-            background-color: #f4f4f4;
-            padding: 20px;
+
+        /* サイドバー */
+        #sidebar-left, #sidebar-right {
+            width: var(--sidebar-width);
+            background-color: var(--bg-sidebar);
             height: 100vh;
             position: fixed;
+            top: 0;
             display: flex;
             flex-direction: column;
+            box-sizing: border-box;
         }
 
-        body.dark-mode #sidebar {
-            background-color: #444;
+        #sidebar-left {
+            left: 0;
+            border-right: 1px solid var(--border-color);
         }
 
+        #sidebar-right {
+            right: 0;
+            border-left: 1px solid var(--border-color);
+        }
+
+        /* サイドバーコンテンツ */
         .sidebar-content {
-            flex-grow: 1;
             display: flex;
             flex-direction: column;
+            height: 100%;
+            padding: var(--content-padding);
         }
 
-        #sidebar h1 {
-            margin: 0 0 20px 0;
+        .sidebar-content h1 {
+            margin: 0 0 1.5rem 0;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text-primary);
         }
 
-        #sidebar h3 {
-            margin: 20px 0;
-        }
-
-        #sidebar button {
-            display: block;
-            width: 100%;
-            margin-bottom: 10px;
-            padding: 10px;
-            background-color: #fff;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        #sidebar button:hover {
-            background-color: #e9ecef;
-        }
-        
-        #content {
+        .nav-wrapper {
             flex: 1;
-            padding: 20px;
-            margin-left: 220px;
+            overflow-y: auto;
+            margin: -0.5rem 0;
         }
 
-        #timeline {
-            border: 1px solid #ddd;
-            padding: 10px;
+        .nav-button {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            width: 100%;
+            padding: 0.875rem 1.25rem;
+            background: none;
+            border: none;
+            border-radius: 9999px;
+            color: var(--text-primary);
+            font-size: 1.125rem;
+            cursor: pointer;
+            transition: all var(--transition-base);
+            text-align: left;
         }
-        
+
+        .nav-button:hover {
+            background-color: var(--hover-bg);
+            transform: translateX(4px);
+        }
+
+        .nav-button.danger {
+            color: var(--danger-color);
+        }
+
+        .nav-button.danger:hover {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        /* メインコンテンツ */
+        #main-content {
+            width: var(--main-width);
+            min-height: 100vh;
+            margin: 0 var(--sidebar-width);
+            background-color: var(--bg-main);
+            transition: background-color var(--transition-base);
+        }
+
+        /* アカウント情報 */
+        .account-info {
+            margin-bottom: 1rem;
+        }
+
+        .account-info .user-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
         /* テーマ切り替えボタン */
         .theme-toggle {
             margin-top: auto;
-            padding-top: 20px;
-            border-top: 1px solid #ddd;
-            margin-bottom: 10px;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
         }
 
-        .theme-toggle button {
-            background-color: transparent !important;
-            color: #666;
-            border: 1px solid #ddd !important;
+        .theme-button {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            width: 100%;
+            padding: 0.875rem 1.25rem;
+            background: none;
+            border: none;
+            border-radius: 9999px;
+            color: var(--text-primary);
+            font-size: 1.125rem;
+            cursor: pointer;
+            transition: all var(--transition-base);
         }
 
-        body.dark-mode .theme-toggle button {
-            color: #fff;
-            border-color: #555 !important;
+        .theme-button:hover {
+            background-color: var(--hover-bg);
         }
-        
-        .user {
-            text-decoration: none;
-            color: #0077cc;
+
+        /* レスポンシブ対応 */
+        @media (max-width: 1600px) {
+            :root {
+                --main-width: 700px;
+            }
         }
-        
-        .user:hover {
-            text-decoration: underline;
+
+        @media (max-width: 1400px) {
+            :root {
+                --main-width: 600px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            :root {
+                --sidebar-width: 0px;
+                --main-width: 100%;
+            }
+
+            #sidebar-left, #sidebar-right {
+                display: none;
+            }
+
+            #main-content {
+                margin: 0;
+            }
+        }
+
+        /* スクロールバー */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: var(--border-color);
+            border-radius: 4px;
+        }
+
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: var(--border-color) transparent;
         }
     </style>
+</head>
+<body>
+    <div class="layout-container">
+        <!-- 左サイドバー -->
+        <div id="sidebar-left">
+            <div class="sidebar-content">
+                <h1>Hochuitter</h1>
+                <div class="nav-wrapper">
+                    <nav>
+                        <a href="{% url 'post:index' %}"><button class="nav-button">🏠 ホーム</button></a>
+                        <a href="{% url 'post:index' %}"><button class="nav-button">🔍 検索</button></a>
+                        {% if user_id %}
+                            <a href="{% url 'post:create_post' %}"><button class="nav-button">✏️ ポストする</button></a>
+                            <a href="{% url 'post:index' %}"><button class="nav-button">💬 メッセージ</button></a>
+                            <a href="{% url 'post:index' %}"><button class="nav-button">🔖 ブックマーク</button></a>
+                            <a href="{% url 'social:userpage' user_id %}"><button class="nav-button">👤 マイページ</button></a>
+                            <form method="post" action="{% url 'logout' %}">
+                                {% csrf_token %}
+                                <button type="submit" class="nav-button danger">🚪 ログアウト</button>
+                            </form>
+                        {% else %}
+                            <a href="{% url 'login' %}"><button class="nav-button">🔑 ログイン</button></a>
+                            <a href="{% url 'signup' %}"><button class="nav-button">📝 新規登録</button></a>
+                        {% endif %}
+                    </nav>
+                </div>
+
+                {% if user_id %}
+                <div class="account-info">
+                    <div class="user-name">{{ user }}</div>
+                </div>
+                {% endif %}
+
+                <div class="theme-toggle">
+                    <button id="theme-toggle" class="theme-button">💡 テーマ切替</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- メインコンテンツ -->
+        <main id="main-content">
+            {% block content %}{% endblock %}
+        </main>
+
+        <!-- 右サイドバー -->
+        <div id="sidebar-right">
+            <div class="sidebar-content">
+                <h2>トレンド</h2>
+                <!-- トレンドコンテンツ -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // テーマの初期設定
+        const isDarkMode = localStorage.getItem('darkMode') === 'true';
+        if (isDarkMode) {
+            document.body.classList.add('dark-mode');
+        }
+
+        // テーマ切り替え
+        document.getElementById('theme-toggle').addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        });
+    </script>
 </body>
 </html>

@@ -1,57 +1,225 @@
-<!--このようにpost_idをAJAXで取得するとurlを正しく生成できる-->
 {% extends "base.html" %}
 
 {% block content %}
+<div class="page-header">
     <h1>{{ page_title }}</h1>
     {% if not user_id %}
-        <h5>投稿日順に新しいものから50個表示されています!</h5>
+        <p class="subtitle">ログインしてSNSを楽しんでね。犯罪以外は何してもok!! // @hochu@管理人@</p>
     {% endif %}
-    <div id="timeline">
-        <ul>
-            {% for post in parent_posts %}
-            投稿者: <a href="{% url 'social:userpage' user_id=post.user.id %}" class="user">@{{ post.user }}</a>
-            <li>
-                <div>{{ post.content }}</div>
-                {% if user_id %} <!--ログイン中のユーザーのみ機能するいいねボタンを表示-->
-                    <button class="like-button" data-post-id="{{ post.id }}">♡</button>
-                    <span class="like-count" data-post-id="{{ post.id }}">{{ post.like_count }}</span>
+</div>
+
+<div id="timeline">
+    {% for post in parent_posts %}
+    <article class="post">
+        <div class="post-header">
+            <a href="{% url 'social:userpage' user_id=post.user.id %}" class="user-link">
+                @{{ post.user }}
+            </a>
+        </div>
+        
+        <div class="post-content">
+            {{ post.content }}
+        </div>
+        
+        <div class="post-footer">
+            <div class="post-actions">
+                {% if user_id %}
+                    <button class="action-button like-button {% if post.is_liked %}liked{% endif %}" data-post-id="{{ post.id }}">
+                        <span class="icon">♥</span>
+                        <span class="count like-count" data-post-id="{{ post.id }}">{{ post.like_count }}</span>
+                    </button>
+                    
+                    <button class="action-button comment-button">
+                        <span class="icon">💬</span>
+                        <span class="count">{{ post.comment_count }}</span>
+                    </button>
+                    
+                    <button class="action-button bookmark-button">
+                        <span class="icon">🔖</span>
+                    </button>
                 {% else %}
-                    <button disabled>♡</button>
-                    <span class="like-count">{{ post.like_count }}</span>
+                    <button class="action-button" disabled>
+                        <span class="icon">♥</span>
+                        <span class="count">{{ post.like_count }}</span>
+                    </button>
+                    <button class="action-button" disabled>
+                        <span class="icon">💬</span>
+                        <span class="count">{{ post.comment_count }}</span>
+                    </button>
                 {% endif %}
-                <a href="{% url 'post:index' %}"><button>💬</button></a>{{ post.comment_count }}
-                {% if user_id %} <!--ログイン中のユーザのみブックマークボタンを表示-->
-                    <a href="{% url 'post:index' %}"><button>🔖</button></a>ブックマークボタン😼
-                {% endif %}
-                <div>投稿日時: {{ post.post_date }}</div>
-
-                <p>----------------------------------------------------------------------------------------------</p>
-            </li>
-            {% empty %}
-            <li>投稿がありません。</li>
-            {% endfor %}
-        </ul>
+            </div>
+            <time class="post-date">{{ post.post_date }}</time>
+        </div>
+    </article>
+    {% empty %}
+    <div class="empty-state">
+        <p>投稿がありません</p>
     </div>
+    {% endfor %}
+</div>
 
-    <script>
-        //いいねボタンの関数
+<style>
+    .page-header {
+        margin-bottom: var(--post-spacing);
+    }
+
+    .page-header h1 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .subtitle {
+        margin-top: 0.5rem;
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+    }
+
+    #timeline {
+        background-color: var(--bg-sidebar);
+        border-radius: 1rem;
+        border: 1px solid var(--border-color);
+        overflow: hidden;
+    }
+
+    .post {
+        padding: var(--post-spacing);
+        border-bottom: 1px solid var(--border-color);
+        transition: all var(--transition-base);
+    }
+
+    .post:hover {
+        background-color: var(--hover-bg);
+    }
+
+    .post:last-child {
+        border-bottom: none;
+    }
+
+    .post-header {
+        margin-bottom: 1rem;
+    }
+
+    .user-link {
+        text-decoration: none;
+        color: var(--accent-color);
+        font-weight: 500;
+        font-size: 1rem;
+        transition: color var(--transition-base);
+    }
+
+    .user-link:hover {
+        text-decoration: underline;
+    }
+
+    .post-content {
+        margin: 1rem 0;
+        line-height: 1.6;
+        color: var(--text-primary);
+        word-wrap: break-word;
+        font-size: 1rem;
+    }
+
+    .post-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: var(--post-spacing);
+    }
+
+    .post-actions {
+        display: flex;
+        gap: 1.5rem;
+    }
+
+    .action-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem;
+        background: none;
+        border: none;
+        border-radius: 9999px;
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all var(--transition-base);
+    }
+
+    .action-button:hover {
+        color: var(--accent-color);
+        background-color: var(--hover-bg);
+    }
+
+    .like-button:hover {
+        color: #e11d48;
+    }
+
+    .action-button.liked {
+        color: #e11d48;
+    }
+
+    .action-button:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+
+    .action-button .icon {
+        font-size: 1.25rem;
+    }
+
+    .action-button .count {
+        min-width: 1rem;
+    }
+
+    .post-date {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+    }
+
+    .empty-state {
+        padding: calc(var(--post-spacing) * 2);
+        text-align: center;
+        color: var(--text-secondary);
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.like-button').forEach(button => {
-            button.addEventListener('click', function() {
+            button.addEventListener('click', async function() {
                 const postId = this.getAttribute('data-post-id');
-                //ここでfetchに対してpostidに応じて動的にURLを参照させる
-                fetch(`/${postId}/toggle/like/`, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRFToken': '{{ csrf_token }}', // CSRFトークンを追加
-                        'Content-Type': 'application/json',
-                    },
-                })
-                .then(response => response.json())
-                .then(data => {
-                    // ボタンに対応するカウンターを更新
-                    document.querySelector(`.like-count[data-post-id="${postId}"]`).textContent = data.like_count;
-                });
+                
+                try {
+                    const response = await fetch(`/${postId}/toggle/like/`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}',
+                            'Content-Type': 'application/json',
+                        },
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    
+                    const data = await response.json();
+                    
+                    // いいねカウントの更新
+                    const likeCount = document.querySelector(`.like-count[data-post-id="${postId}"]`);
+                    if (likeCount) {
+                        likeCount.textContent = data.like_count;
+                    }
+                    
+                    // ボタンの状態を更新
+                    this.classList.toggle('liked', data.is_liked);
+                    
+                } catch (error) {
+                    console.error('Error:', error);
+                }
             });
         });
-    </script>
+    });
+</script>
 {% endblock %}
