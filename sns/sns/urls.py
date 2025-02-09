@@ -23,13 +23,16 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include('post.urls')),
     path('social/',include('social.urls')),#social関連のurlの先頭にはsocialをつける
-    path('login', auth_views.LoginView.as_view(
+    path('login/', views.CustomLoginView.as_view(
         redirect_authenticated_user=True,
-        template_name='registration/login.html',
-        extra_context={'sidebar_form': True}
+        template_name='registration/login.html'
     ), name='login'),
     path('logout/', auth_views.LogoutView.as_view(
-        next_page='/'
+        next_page='/',
+        template_name='registration/logout.html'
     ), name='logout'),
-    path('signup/', views.SignUpView.as_view(), name='signup'),
+    path('signup/', views.SignUpView.as_view(
+        template_name='registration/signup.html',
+        success_url='/'
+    ), name='signup'),
 ]
