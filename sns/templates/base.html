@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
@@ -21,7 +20,7 @@
             /* レイアウトサイズ */
             --sidebar-width: 280px;
             --main-width: 800px;
-            --content-padding: 2rem;
+            --content-padding: 1.5rem;
             --post-spacing: 1.5rem;
         }
 
@@ -52,20 +51,18 @@
             justify-content: center;
             width: 100%;
             min-height: 100vh;
-            padding: 0 var(--content-padding);
-            box-sizing: border-box;
         }
 
         /* サイドバー */
         #sidebar-left, #sidebar-right {
             width: var(--sidebar-width);
             background-color: var(--bg-sidebar);
-            padding: var(--content-padding);
             height: 100vh;
             position: fixed;
             top: 0;
-            overflow-y: auto;
-            transition: background-color var(--transition-base);
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
         }
 
         #sidebar-left {
@@ -82,8 +79,8 @@
         .sidebar-content {
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
             height: 100%;
+            padding: var(--content-padding);
         }
 
         .sidebar-content h1 {
@@ -91,6 +88,12 @@
             font-size: 1.5rem;
             font-weight: bold;
             color: var(--text-primary);
+        }
+
+        .nav-wrapper {
+            flex: 1;
+            overflow-y: auto;
+            margin: -0.5rem 0;
         }
 
         .nav-button {
@@ -127,10 +130,20 @@
         #main-content {
             width: var(--main-width);
             min-height: 100vh;
-            padding: var(--content-padding);
             margin: 0 var(--sidebar-width);
             background-color: var(--bg-main);
             transition: background-color var(--transition-base);
+        }
+
+        /* アカウント情報 */
+        .account-info {
+            margin-bottom: 1rem;
+        }
+
+        .account-info .user-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
         }
 
         /* テーマ切り替えボタン */
@@ -176,7 +189,6 @@
             :root {
                 --sidebar-width: 0px;
                 --main-width: 100%;
-                --content-padding: 1rem;
             }
 
             #sidebar-left, #sidebar-right {
@@ -185,10 +197,6 @@
 
             #main-content {
                 margin: 0;
-            }
-
-            .layout-container {
-                padding: 0;
             }
         }
 
@@ -218,23 +226,32 @@
         <div id="sidebar-left">
             <div class="sidebar-content">
                 <h1>Hochuitter</h1>
-                <nav>
-                    <a href="{% url 'post:index' %}"><button class="nav-button">🏠 ホーム</button></a>
-                    <a href="{% url 'post:index' %}"><button class="nav-button">🔍 検索</button></a>
-                    {% if user_id %}
-                        <a href="{% url 'post:create_post' %}"><button class="nav-button">✏️ ポストする</button></a>
-                        <a href="{% url 'post:index' %}"><button class="nav-button">💬 メッセージ</button></a>
-                        <a href="{% url 'post:index' %}"><button class="nav-button">🔖 ブックマーク</button></a>
-                        <a href="{% url 'social:userpage' user_id %}"><button class="nav-button">👤 マイページ</button></a>
-                        <form method="post" action="{% url 'logout' %}">
-                            {% csrf_token %}
-                            <button type="submit" class="nav-button danger">🚪 ログアウト</button>
-                        </form>
-                    {% else %}
-                        <a href="{% url 'login' %}"><button class="nav-button">🔑 ログイン</button></a>
-                        <a href="{% url 'signup' %}"><button class="nav-button">📝 新規登録</button></a>
-                    {% endif %}
-                </nav>
+                <div class="nav-wrapper">
+                    <nav>
+                        <a href="{% url 'post:index' %}"><button class="nav-button">🏠 ホーム</button></a>
+                        <a href="{% url 'post:index' %}"><button class="nav-button">🔍 検索</button></a>
+                        {% if user_id %}
+                            <a href="{% url 'post:create_post' %}"><button class="nav-button">✏️ ポストする</button></a>
+                            <a href="{% url 'post:index' %}"><button class="nav-button">💬 メッセージ</button></a>
+                            <a href="{% url 'post:index' %}"><button class="nav-button">🔖 ブックマーク</button></a>
+                            <a href="{% url 'social:userpage' user_id %}"><button class="nav-button">👤 マイページ</button></a>
+                            <form method="post" action="{% url 'logout' %}">
+                                {% csrf_token %}
+                                <button type="submit" class="nav-button danger">🚪 ログアウト</button>
+                            </form>
+                        {% else %}
+                            <a href="{% url 'login' %}"><button class="nav-button">🔑 ログイン</button></a>
+                            <a href="{% url 'signup' %}"><button class="nav-button">📝 新規登録</button></a>
+                        {% endif %}
+                    </nav>
+                </div>
+
+                {% if user_id %}
+                <div class="account-info">
+                    <div class="user-name">{{ user }}</div>
+                </div>
+                {% endif %}
+
                 <div class="theme-toggle">
                     <button id="theme-toggle" class="theme-button">💡 テーマ切替</button>
                 </div>
