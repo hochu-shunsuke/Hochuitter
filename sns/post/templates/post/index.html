@@ -1,57 +1,112 @@
-<!--このようにpost_idをAJAXで取得するとurlを正しく生成できる-->
 {% extends "base.html" %}
 
 {% block content %}
+<div class="page-header">
     <h1>{{ page_title }}</h1>
     {% if not user_id %}
-        <h5>投稿日順に新しいものから50個表示されています!</h5>
+        <p class="subtitle">投稿日順に新しいものから50個表示されています!</p>
     {% endif %}
-    <div id="timeline">
-        <ul>
-            {% for post in parent_posts %}
-            投稿者: <a href="{% url 'social:userpage' user_id=post.user.id %}" class="user">@{{ post.user }}</a>
-            <li>
-                <div>{{ post.content }}</div>
-                {% if user_id %} <!--ログイン中のユーザーのみ機能するいいねボタンを表示-->
-                    <button class="like-button" data-post-id="{{ post.id }}">♡</button>
+</div>
+
+<div id="timeline">
+    {% for post in parent_posts %}
+    <article class="post">
+        <div class="post-header">
+            <a href="{% url 'social:userpage' user_id=post.user.id %}" class="user">@{{ post.user }}</a>
+            <span class="post-date">{{ post.post_date }}</span>
+        </div>
+        
+        <div class="post-content">{{ post.content }}</div>
+        
+        <div class="post-actions">
+            {% if user_id %}
+                <button class="action-button like-button" data-post-id="{{ post.id }}">
+                    <span>♡</span>
                     <span class="like-count" data-post-id="{{ post.id }}">{{ post.like_count }}</span>
-                {% else %}
-                    <button disabled>♡</button>
+                </button>
+                
+                <button class="action-button comment-button">
+                    <span>💬</span>
+                    <span class="comment-count">{{ post.comment_count }}</span>
+                </button>
+                
+                <button class="action-button bookmark-button">
+                    <span>🔖</span>
+                </button>
+            {% else %}
+                <button class="action-button" disabled>
+                    <span>♡</span>
                     <span class="like-count">{{ post.like_count }}</span>
-                {% endif %}
-                <a href="{% url 'post:index' %}"><button>💬</button></a>{{ post.comment_count }}
-                {% if user_id %} <!--ログイン中のユーザのみブックマークボタンを表示-->
-                    <a href="{% url 'post:index' %}"><button>🔖</button></a>ブックマークボタン😼
-                {% endif %}
-                <div>投稿日時: {{ post.post_date }}</div>
-
-                <p>---------------------------------------------------------</p>
-            </li>
-            {% empty %}
-            <li>投稿がありません。</li>
-            {% endfor %}
-        </ul>
+                </button>
+                
+                <button class="action-button" disabled>
+                    <span>💬</span>
+                    <span class="comment-count">{{ post.comment_count }}</span>
+                </button>
+            {% endif %}
+        </div>
+    </article>
+    {% empty %}
+    <div class="empty-state">
+        <p>投稿がありません。</p>
     </div>
+    {% endfor %}
+</div>
 
-    <script>
-        //いいねボタンの関数
-        document.querySelectorAll('.like-button').forEach(button => {
-            button.addEventListener('click', function() {
-                const postId = this.getAttribute('data-post-id');
-                //ここでfetchに対してpostidに応じて動的にURLを参照させる
-                fetch(`/${postId}/toggle/like/`, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRFToken': '{{ csrf_token }}', // CSRFトークンを追加
-                        'Content-Type': 'application/json',
-                    },
-                })
-                .then(response => response.json())
-                .then(data => {
-                    // ボタンに対応するカウンターを更新
-                    document.querySelector(`.like-count[data-post-id="${postId}"]`).textContent = data.like_count;
-                });
-            });
-        });
-    </script>
+<style>
+    .page-header {
+        margin-bottom: 2rem;
+    }
+
+    .page-header h1 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 600;
+    }
+
+    .subtitle {
+        margin: 0.5rem 0 0 0;
+        color: hsl(var(--muted-foreground));
+        font-size: 0.875rem;
+    }
+
+    .post {
+        padding: 1.5rem;
+        border-bottom: 1px solid hsl(var(--border));
+    }
+
+    .post:last-child {
+        border-bottom: none;
+    }
+
+    .post-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.75rem;
+    }
+
+    .post-date {
+        font-size: 0.875rem;
+        color: hsl(var(--muted-foreground));
+    }
+
+    .post-content {
+        margin-bottom: 1rem;
+        line-height: 1.5;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+    }
+
+    .post-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 2rem;
+        color: hsl(var(--muted-foreground));
+    }
+</style>
 {% endblock %}

@@ -1,8 +1,11 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div id="post-form-container">
+<div class="page-header">
     <h1>新規投稿</h1>
+</div>
+
+<div id="post-form-container">
     <form method="post" class="post-form">
         {% csrf_token %}
         <div class="form-group">
@@ -12,12 +15,13 @@
                 placeholder="いまどうしてる？"
                 class="post-textarea"
                 maxlength="500"
+                rows="4"
             ></textarea>
             <div class="form-footer">
                 <span class="character-counter">0 / 500</span>
                 <div class="form-actions">
-                    <a href="{% url 'post:index' %}" class="cancel-button action-button">キャンセル</a>
-                    <button type="submit" class="submit-button action-button">投稿する</button>
+                    <a href="{% url 'post:index' %}" class="action-button cancel-button">キャンセル</a>
+                    <button type="submit" class="action-button submit-button">投稿する</button>
                 </div>
             </div>
         </div>
@@ -25,31 +29,31 @@
 </div>
 
 <style>
-    #post-form-container {
-        max-width: 600px;
-        margin: 0 auto;
-        padding: 2rem;
-        background-color: hsl(var(--card));
-        border-radius: 1rem;
-        border: 1px solid hsl(var(--border));
+    .page-header {
+        margin-bottom: 2rem;
     }
 
-    #post-form-container h1 {
-        margin-bottom: 1.5rem;
+    .page-header h1 {
+        margin: 0;
         font-size: 1.5rem;
         font-weight: 600;
     }
 
+    #post-form-container {
+        background-color: hsl(var(--card));
+        border: 1px solid hsl(var(--border));
+        border-radius: 1rem;
+        overflow: hidden;
+    }
+
     .post-form {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
+        padding: 1.5rem;
     }
 
     .form-group {
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
+        gap: 1rem;
     }
 
     .post-textarea {
@@ -64,6 +68,9 @@
         font-size: 1rem;
         line-height: 1.5;
         transition: all 0.2s ease;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        font-family: inherit;
     }
 
     .post-textarea:focus {
@@ -95,8 +102,8 @@
     }
 
     .submit-button {
-        background-color: hsl(var(--primary));
-        color: hsl(var(--primary-foreground));
+        background-color: hsl(var(--primary)) !important;
+        color: hsl(var(--primary-foreground)) !important;
     }
 
     .cancel-button {
@@ -112,6 +119,26 @@
     .submit-button:active, .cancel-button:active {
         transform: translateY(0);
     }
+
+    /* Firefox用のスクロールバーカスタマイズ */
+    .post-textarea {
+        scrollbar-width: thin;
+        scrollbar-color: hsl(var(--muted)) transparent;
+    }
+
+    /* Chrome/Safari用のスクロールバーカスタマイズ */
+    .post-textarea::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .post-textarea::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .post-textarea::-webkit-scrollbar-thumb {
+        background-color: hsl(var(--muted));
+        border-radius: 4px;
+    }
 </style>
 
 <script>
@@ -122,21 +149,25 @@
         function updateCounter() {
             const length = textarea.value.length;
             counter.textContent = `${length} / 500`;
+            
+            // 文字数制限に近づいたら警告色に
+            if (length >= 450) {
+                counter.style.color = 'hsl(var(--destructive))';
+            } else {
+                counter.style.color = 'hsl(var(--muted-foreground))';
+            }
         }
 
-        // 自動リサイズ
-        function autoResize() {
-            textarea.style.height = 'auto';
-            textarea.style.height = textarea.scrollHeight + 'px';
-        }
-
-        textarea.addEventListener('input', function() {
-            updateCounter();
-            autoResize();
-        });
-
+        textarea.addEventListener('input', updateCounter);
+        
         // 初期カウンター表示
         updateCounter();
+
+        // テキストエリアの高さを自動調整
+        textarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
     });
 </script>
 {% endblock %}
