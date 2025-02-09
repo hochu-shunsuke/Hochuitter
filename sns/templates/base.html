@@ -85,8 +85,15 @@
 
         .sidebar-content h1 {
             margin: 0 0 1.5rem 0;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .sidebar-content h2 {
+            margin: 0 0 1.5rem 0;
             font-size: 1.5rem;
-            font-weight: bold;
+            font-weight: 600;
             color: var(--text-primary);
         }
 
@@ -107,6 +114,7 @@
             border-radius: 9999px;
             color: var(--text-primary);
             font-size: 1.125rem;
+            font-weight: 500;
             cursor: pointer;
             transition: all var(--transition-base);
             text-align: left;
@@ -119,6 +127,7 @@
 
         .nav-button.danger {
             color: var(--danger-color);
+            font-weight: 600;
         }
 
         .nav-button.danger:hover {
@@ -137,13 +146,29 @@
 
         /* アカウント情報 */
         .account-info {
-            margin-bottom: 1rem;
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
         }
 
         .account-info .user-name {
-            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            width: 100%;
+            padding: 0.875rem 1.25rem;
+            background: none;
+            border: none;
+            border-radius: 9999px;
             color: var(--text-primary);
-            margin-bottom: 0.25rem;
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            cursor: default;
+        }
+
+        .account-info .user-name:before {
+            content: "👤";
         }
 
         /* テーマ切り替えボタン */
@@ -164,6 +189,7 @@
             border-radius: 9999px;
             color: var(--text-primary);
             font-size: 1.125rem;
+            font-weight: 500;
             cursor: pointer;
             transition: all var(--transition-base);
         }
@@ -235,13 +261,6 @@
                             <a href="{% url 'post:index' %}"><button class="nav-button">💬 メッセージ</button></a>
                             <a href="{% url 'post:index' %}"><button class="nav-button">🔖 ブックマーク</button></a>
                             <a href="{% url 'social:userpage' user_id %}"><button class="nav-button">👤 マイページ</button></a>
-                            <form method="post" action="{% url 'logout' %}">
-                                {% csrf_token %}
-                                <button type="submit" class="nav-button danger">🚪 ログアウト</button>
-                            </form>
-                        {% else %}
-                            <a href="{% url 'login' %}"><button class="nav-button">🔑 ログイン</button></a>
-                            <a href="{% url 'signup' %}"><button class="nav-button">📝 新規登録</button></a>
                         {% endif %}
                     </nav>
                 </div>
@@ -249,12 +268,17 @@
                 {% if user_id %}
                 <div class="account-info">
                     <div class="user-name">{{ user }}</div>
+                    <form method="post" action="{% url 'logout' %}" onsubmit="return confirm('ログアウトしますか？');">
+                        {% csrf_token %}
+                        <button type="submit" class="nav-button danger">🚪 ログアウト</button>
+                    </form>
+                </div>
+                {% else %}
+                <div class="account-info">
+                    <a href="{% url 'login' %}"><button class="nav-button">🔑 ログイン</button></a>
+                    <a href="{% url 'signup' %}"><button class="nav-button">📝 新規登録</button></a>
                 </div>
                 {% endif %}
-
-                <div class="theme-toggle">
-                    <button id="theme-toggle" class="theme-button">💡 テーマ切替</button>
-                </div>
             </div>
         </div>
 
@@ -268,6 +292,9 @@
             <div class="sidebar-content">
                 <h2>トレンド</h2>
                 <!-- トレンドコンテンツ -->
+                <div class="theme-toggle">
+                    <button id="theme-toggle" class="theme-button">💡 テーマ切替</button>
+                </div>
             </div>
         </div>
     </div>
