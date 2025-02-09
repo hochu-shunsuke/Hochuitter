@@ -5,7 +5,7 @@
     <h1>新規投稿</h1>
 </div>
 
-<div id="post-form-container">
+<div class="post-form-container">
     <form method="post" class="post-form">
         {% csrf_token %}
         <div class="form-group">
@@ -15,13 +15,12 @@
                 placeholder="いまどうしてる？"
                 class="post-textarea"
                 maxlength="500"
-                rows="4"
             ></textarea>
             <div class="form-footer">
                 <span class="character-counter">0 / 500</span>
                 <div class="form-actions">
-                    <a href="{% url 'post:index' %}" class="action-button cancel-button">キャンセル</a>
-                    <button type="submit" class="action-button submit-button">投稿する</button>
+                    <a href="{% url 'post:index' %}" class="button cancel-button">キャンセル</a>
+                    <button type="submit" class="button submit-button">投稿する</button>
                 </div>
             </div>
         </div>
@@ -29,19 +28,9 @@
 </div>
 
 <style>
-    .page-header {
-        margin-bottom: 2rem;
-    }
-
-    .page-header h1 {
-        margin: 0;
-        font-size: 1.5rem;
-        font-weight: 600;
-    }
-
-    #post-form-container {
-        background-color: hsl(var(--card));
-        border: 1px solid hsl(var(--border));
+    .post-form-container {
+        background-color: var(--bg-sidebar);
+        border: 1px solid var(--border-color);
         border-radius: 1rem;
         overflow: hidden;
     }
@@ -60,27 +49,25 @@
         width: 100%;
         min-height: 150px;
         padding: 1rem;
-        background-color: hsl(var(--background));
-        color: hsl(var(--foreground));
-        border: 1px solid hsl(var(--border));
+        background-color: var(--bg-main);
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
         border-radius: 0.75rem;
         resize: vertical;
         font-size: 1rem;
         line-height: 1.5;
-        transition: all 0.2s ease;
-        white-space: pre-wrap;
-        word-wrap: break-word;
+        transition: all var(--transition-base);
         font-family: inherit;
     }
 
     .post-textarea:focus {
         outline: none;
-        border-color: hsl(var(--ring));
-        box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2);
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 2px var(--accent-color-alpha);
     }
 
     .post-textarea::placeholder {
-        color: hsl(var(--muted-foreground));
+        color: var(--text-secondary);
     }
 
     .form-footer {
@@ -92,7 +79,11 @@
 
     .character-counter {
         font-size: 0.875rem;
-        color: hsl(var(--muted-foreground));
+        color: var(--text-secondary);
+    }
+
+    .character-counter.warning {
+        color: #e11d48;
     }
 
     .form-actions {
@@ -101,43 +92,37 @@
         align-items: center;
     }
 
-    .submit-button {
-        background-color: hsl(var(--primary)) !important;
-        color: hsl(var(--primary-foreground)) !important;
-    }
-
-    .cancel-button {
-        background-color: hsl(var(--secondary));
-        color: hsl(var(--secondary-foreground));
+    .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all var(--transition-base);
         text-decoration: none;
     }
 
-    .submit-button:hover, .cancel-button:hover {
+    .submit-button {
+        background-color: var(--accent-color);
+        color: white;
+    }
+
+    .submit-button:hover {
+        opacity: 0.9;
         transform: translateY(-1px);
     }
 
-    .submit-button:active, .cancel-button:active {
-        transform: translateY(0);
+    .cancel-button {
+        background-color: var(--hover-bg);
+        color: var(--text-primary);
     }
 
-    /* Firefox用のスクロールバーカスタマイズ */
-    .post-textarea {
-        scrollbar-width: thin;
-        scrollbar-color: hsl(var(--muted)) transparent;
-    }
-
-    /* Chrome/Safari用のスクロールバーカスタマイズ */
-    .post-textarea::-webkit-scrollbar {
-        width: 8px;
-    }
-
-    .post-textarea::-webkit-scrollbar-track {
-        background: transparent;
-    }
-
-    .post-textarea::-webkit-scrollbar-thumb {
-        background-color: hsl(var(--muted));
-        border-radius: 4px;
+    .cancel-button:hover {
+        background-color: var(--border-color);
     }
 </style>
 
@@ -150,24 +135,27 @@
             const length = textarea.value.length;
             counter.textContent = `${length} / 500`;
             
-            // 文字数制限に近づいたら警告色に
+            // 文字数制限に近づいたら警告表示
             if (length >= 450) {
-                counter.style.color = 'hsl(var(--destructive))';
+                counter.classList.add('warning');
             } else {
-                counter.style.color = 'hsl(var(--muted-foreground))';
+                counter.classList.remove('warning');
             }
         }
 
-        textarea.addEventListener('input', updateCounter);
-        
-        // 初期カウンター表示
-        updateCounter();
-
         // テキストエリアの高さを自動調整
+        function autoResize() {
+            textarea.style.height = 'auto';
+            textarea.style.height = (textarea.scrollHeight) + 'px';
+        }
+
         textarea.addEventListener('input', function() {
-            this.style.height = 'auto';
-            this.style.height = (this.scrollHeight) + 'px';
+            updateCounter();
+            autoResize();
         });
+
+        // 初期表示
+        updateCounter();
     });
 </script>
 {% endblock %}
