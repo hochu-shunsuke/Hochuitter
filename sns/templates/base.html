@@ -15,7 +15,14 @@
             --hover-bg: #f5f5f5;
             --accent-color: #1a91da;
             --danger-color: #dc2626;
+            --accent-color-alpha: rgba(26, 145, 218, 0.2);
             --transition-base: 0.2s ease;
+
+            /* レイアウトサイズ */
+            --sidebar-width: 280px;
+            --main-width: 800px;
+            --content-padding: 2rem;
+            --post-spacing: 1.5rem;
         }
 
         /* ダークモード */
@@ -26,11 +33,10 @@
             --text-secondary: #8899a6;
             --border-color: #38444d;
             --hover-bg: #1c2732;
-            --accent-color: #1a91da;
+            --accent-color: #1d9bf0;
             --danger-color: #ef4444;
         }
 
-        /* 基本レイアウト */
         body {
             margin: 0;
             padding: 0;
@@ -46,18 +52,20 @@
             justify-content: center;
             width: 100%;
             min-height: 100vh;
+            padding: 0 var(--content-padding);
+            box-sizing: border-box;
         }
 
         /* サイドバー */
         #sidebar-left, #sidebar-right {
-            width: 280px;
+            width: var(--sidebar-width);
             background-color: var(--bg-sidebar);
-            padding: 1rem;
+            padding: var(--content-padding);
             height: 100vh;
             position: fixed;
             top: 0;
             overflow-y: auto;
-            transition: background-color var(--transition-base), border-color var(--transition-base);
+            transition: background-color var(--transition-base);
         }
 
         #sidebar-left {
@@ -70,87 +78,46 @@
             border-left: 1px solid var(--border-color);
         }
 
-        /* サイドバーコンテンツ */
-        .sidebar-content {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
-
-        .sidebar-content h1, .sidebar-content h2 {
-            margin: 0 0 1.5rem 0;
-            font-size: 1.5rem;
-            color: var(--text-primary);
-        }
-
-        .sidebar-content button {
-            display: block;
-            width: 100%;
-            padding: 0.75rem 1rem;
-            margin-bottom: 0.5rem;
-            background: none;
-            border: none;
-            border-radius: 0.5rem;
-            text-align: left;
-            font-size: 1rem;
-            color: var(--text-primary);
-            cursor: pointer;
-            transition: all var(--transition-base);
-        }
-
-        .sidebar-content button:hover {
-            background-color: var(--hover-bg);
-            transform: translateX(4px);
-        }
-
-        .sidebar-content a {
-            text-decoration: none;
-            color: inherit;
-        }
-
         /* メインコンテンツ */
         #main-content {
-            width: 600px;
+            width: var(--main-width);
             min-height: 100vh;
-            padding: 2rem;
-            margin: 0 auto;
+            padding: var(--content-padding);
+            margin: 0 var(--sidebar-width);
             background-color: var(--bg-main);
             transition: background-color var(--transition-base);
         }
 
-        /* テーマ切り替えボタン */
-        .theme-toggle {
-            margin-top: auto;
-            padding: 1rem 0;
-            border-top: 1px solid var(--border-color);
+        /* レスポンシブ対応 */
+        @media (max-width: 1600px) {
+            :root {
+                --main-width: 700px;
+            }
         }
 
-        .theme-toggle button {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            background: none;
-            border: none;
-            border-radius: 0.5rem;
-            color: var(--text-primary);
-            cursor: pointer;
-            transition: all var(--transition-base);
-            text-align: left;
-            font-size: 1rem;
+        @media (max-width: 1400px) {
+            :root {
+                --main-width: 600px;
+            }
         }
 
-        .theme-toggle button:hover {
-            background-color: var(--hover-bg);
-        }
-
-        /* モバイル対応 */
         @media (max-width: 768px) {
+            :root {
+                --sidebar-width: 0px;
+                --main-width: 100%;
+                --content-padding: 1rem;
+            }
+
             #sidebar-left, #sidebar-right {
                 display: none;
             }
 
             #main-content {
-                width: 100%;
-                padding: 1rem;
+                margin: 0;
+            }
+
+            .layout-container {
+                padding: 0;
             }
         }
 
@@ -167,6 +134,11 @@
             background-color: var(--border-color);
             border-radius: 4px;
         }
+
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: var(--border-color) transparent;
+        }
     </style>
 </head>
 <body>
@@ -175,7 +147,7 @@
         <div id="sidebar-left">
             <div class="sidebar-content">
                 <h1>Hochuitter</h1>
-                <nav>
+                <nav></nav>
                     <a href="{% url 'post:index' %}"><button>🏠 ホーム</button></a>
                     <a href="{% url 'post:index' %}"><button>🔍 検索</button></a>
                     {% if user_id %}

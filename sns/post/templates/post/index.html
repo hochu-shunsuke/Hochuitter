@@ -60,7 +60,7 @@
 
 <style>
     .page-header {
-        margin-bottom: 2rem;
+        margin-bottom: var(--post-spacing);
     }
 
     .page-header h1 {
@@ -84,9 +84,9 @@
     }
 
     .post {
-        padding: 1.5rem;
+        padding: var(--post-spacing);
         border-bottom: 1px solid var(--border-color);
-        transition: background-color var(--transition-base);
+        transition: all var(--transition-base);
     }
 
     .post:hover {
@@ -98,13 +98,14 @@
     }
 
     .post-header {
-        margin-bottom: 0.75rem;
+        margin-bottom: 1rem;
     }
 
     .user-link {
         text-decoration: none;
         color: var(--accent-color);
         font-weight: 500;
+        font-size: 1rem;
         transition: color var(--transition-base);
     }
 
@@ -113,18 +114,19 @@
     }
 
     .post-content {
-        margin-bottom: 1rem;
-        line-height: 1.5;
+        margin: 1rem 0;
+        line-height: 1.6;
         color: var(--text-primary);
         white-space: pre-wrap;
         word-wrap: break-word;
+        font-size: 1rem;
     }
 
     .post-footer {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-top: 1rem;
+        margin-top: var(--post-spacing);
     }
 
     .post-actions {
@@ -133,7 +135,7 @@
     }
 
     .action-button {
-        display: flex;
+        display: inline-flex;
         align-items: center;
         gap: 0.5rem;
         padding: 0.5rem;
@@ -178,7 +180,7 @@
     }
 
     .empty-state {
-        padding: 3rem;
+        padding: calc(var(--post-spacing) * 2);
         text-align: center;
         color: var(--text-secondary);
     }
