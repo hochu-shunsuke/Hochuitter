@@ -78,6 +78,51 @@
             border-left: 1px solid var(--border-color);
         }
 
+        /* サイドバーコンテンツ */
+        .sidebar-content {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            height: 100%;
+        }
+
+        .sidebar-content h1 {
+            margin: 0 0 1.5rem 0;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        .nav-button {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            width: 100%;
+            padding: 0.875rem 1.25rem;
+            background: none;
+            border: none;
+            border-radius: 9999px;
+            color: var(--text-primary);
+            font-size: 1.125rem;
+            cursor: pointer;
+            transition: all var(--transition-base);
+            text-align: left;
+        }
+
+        .nav-button:hover {
+            background-color: var(--hover-bg);
+            transform: translateX(4px);
+        }
+
+        .nav-button.danger {
+            color: var(--danger-color);
+        }
+
+        .nav-button.danger:hover {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
         /* メインコンテンツ */
         #main-content {
             width: var(--main-width);
@@ -86,6 +131,32 @@
             margin: 0 var(--sidebar-width);
             background-color: var(--bg-main);
             transition: background-color var(--transition-base);
+        }
+
+        /* テーマ切り替えボタン */
+        .theme-toggle {
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .theme-button {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            width: 100%;
+            padding: 0.875rem 1.25rem;
+            background: none;
+            border: none;
+            border-radius: 9999px;
+            color: var(--text-primary);
+            font-size: 1.125rem;
+            cursor: pointer;
+            transition: all var(--transition-base);
+        }
+
+        .theme-button:hover {
+            background-color: var(--hover-bg);
         }
 
         /* レスポンシブ対応 */
@@ -147,25 +218,25 @@
         <div id="sidebar-left">
             <div class="sidebar-content">
                 <h1>Hochuitter</h1>
-                <nav></nav>
-                    <a href="{% url 'post:index' %}"><button>🏠 ホーム</button></a>
-                    <a href="{% url 'post:index' %}"><button>🔍 検索</button></a>
+                <nav>
+                    <a href="{% url 'post:index' %}"><button class="nav-button">🏠 ホーム</button></a>
+                    <a href="{% url 'post:index' %}"><button class="nav-button">🔍 検索</button></a>
                     {% if user_id %}
-                        <a href="{% url 'post:create_post' %}"><button>✏️ ポストする</button></a>
-                        <a href="{% url 'post:index' %}"><button>💬 メッセージ</button></a>
-                        <a href="{% url 'post:index' %}"><button>🔖 ブックマーク</button></a>
-                        <a href="{% url 'social:userpage' user_id %}"><button>👤 マイページ</button></a>
+                        <a href="{% url 'post:create_post' %}"><button class="nav-button">✏️ ポストする</button></a>
+                        <a href="{% url 'post:index' %}"><button class="nav-button">💬 メッセージ</button></a>
+                        <a href="{% url 'post:index' %}"><button class="nav-button">🔖 ブックマーク</button></a>
+                        <a href="{% url 'social:userpage' user_id %}"><button class="nav-button">👤 マイページ</button></a>
                         <form method="post" action="{% url 'logout' %}">
                             {% csrf_token %}
-                            <button type="submit" style="color: var(--danger-color);">🚪 ログアウト</button>
+                            <button type="submit" class="nav-button danger">🚪 ログアウト</button>
                         </form>
                     {% else %}
-                        <a href="{% url 'login' %}"><button>🔑 ログイン</button></a>
-                        <a href="{% url 'signup' %}"><button>📝 新規登録</button></a>
+                        <a href="{% url 'login' %}"><button class="nav-button">🔑 ログイン</button></a>
+                        <a href="{% url 'signup' %}"><button class="nav-button">📝 新規登録</button></a>
                     {% endif %}
                 </nav>
                 <div class="theme-toggle">
-                    <button id="theme-toggle">💡 テーマ切替</button>
+                    <button id="theme-toggle" class="theme-button">💡 テーマ切替</button>
                 </div>
             </div>
         </div>

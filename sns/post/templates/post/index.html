@@ -24,7 +24,7 @@
         <div class="post-footer">
             <div class="post-actions">
                 {% if user_id %}
-                    <button class="action-button like-button" data-post-id="{{ post.id }}">
+                    <button class="action-button like-button {% if post.is_liked %}liked{% endif %}" data-post-id="{{ post.id }}">
                         <span class="icon">♥</span>
                         <span class="count like-count" data-post-id="{{ post.id }}">{{ post.like_count }}</span>
                     </button>
@@ -117,7 +117,6 @@
         margin: 1rem 0;
         line-height: 1.6;
         color: var(--text-primary);
-        white-space: pre-wrap;
         word-wrap: break-word;
         font-size: 1rem;
     }
@@ -185,4 +184,42 @@
         color: var(--text-secondary);
     }
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.like-button').forEach(button => {
+            button.addEventListener('click', async function() {
+                const postId = this.getAttribute('data-post-id');
+                
+                try {
+                    const response = await fetch(`/${postId}/toggle/like/`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}',
+                            'Content-Type': 'application/json',
+                        },
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    
+                    const data = await response.json();
+                    
+                    // いいねカウントの更新
+                    const likeCount = document.querySelector(`.like-count[data-post-id="${postId}"]`);
+                    if (likeCount) {
+                        likeCount.textContent = data.like_count;
+                    }
+                    
+                    // ボタンの状態を更新
+                    this.classList.toggle('liked', data.is_liked);
+                    
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            });
+        });
+    });
+</script>
 {% endblock %}
