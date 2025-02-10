@@ -29,9 +29,9 @@
                         <span class="count like-count" data-post-id="{{ post.id }}">{{ post.like_count }}</span>
                     </button>
                     
-                    <button class="action-button comment-button">
+                    <button class="action-button comment-button" data-post-id="{{ post.id }}">
                         <span class="icon">💬</span>
-                        <span class="count">{{ post.comment_count }}</span>
+                        <span class="count">{{ post.comments_count }}</span>
                     </button>
                     
                     <button class="action-button bookmark-button">
@@ -220,6 +220,105 @@
                 }
             });
         });
+    });
+</script>
+
+<!-- コメントモーダル -->
+<div id="comment-modal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>コメントを追加</h2>
+        <form id="comment-form" method="POST">
+            {% csrf_token %}
+            {{ comment_form.content }}
+            <button type="submit" class="submit-button">送信</button>
+        </form>
+    </div>
+</div>
+
+<style>
+    /* モーダルのスタイル */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+    }
+
+    .modal-content {
+        background-color: var(--bg-primary);
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        width: 80%;
+        max-width: 500px;
+    }
+
+    .close {
+        color: var(--text-secondary);
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .close:hover {
+        color: var(--text-primary);
+    }
+
+    #comment-form textarea {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid var(--border-color);
+        border-radius: 5px;
+        background-color: var(--bg-sidebar);
+        color: var(--text-primary);
+        resize: vertical;
+    }
+
+    .submit-button {
+        background-color: var(--accent-color);
+        color: white;
+        padding: 8px 16px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        float: right;
+    }
+
+    .submit-button:hover {
+        opacity: 0.9;
+    }
+</style>
+
+<script>
+    // コメントモーダルの制御
+    const modal = document.getElementById('comment-modal');
+    const commentForm = document.getElementById('comment-form');
+    let currentPostId = null;
+
+    document.querySelectorAll('.comment-button').forEach(button => {
+        button.addEventListener('click', function() {
+            currentPostId = this.getAttribute('data-post-id');
+            modal.style.display = 'block';
+            commentForm.action = `/${currentPostId}/comment/`;
+        });
+    });
+
+    document.querySelector('.close').addEventListener('click', function() {
+        modal.style.display = 'none';
+    });
+
+    window.addEventListener('click', function(event) {
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
     });
 </script>
 {% endblock %}
