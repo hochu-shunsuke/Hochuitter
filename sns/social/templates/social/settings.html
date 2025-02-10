@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block body_class %}{% if profile.theme == 'dark' %}dark-mode{% endif %}{% endblock %}
+
+{% block content %}
+<div class="settings-container">
+    <h1>設定</h1>
+    <form method="post" class="settings-form">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="form-group">
+            <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+            {% if field.name == 'theme' %}
+                <select name="{{ field.name }}" id="{{ field.id_for_label }}" class="theme-select">
+                    {% for value, text in field.field.choices %}
+                        <option value="{{ value }}" {% if value == profile.theme %}selected{% endif %}>{{ text }}</option>
+                    {% endfor %}
+                </select>
+            {% else %}
+                {{ field }}
+            {% endif %}
+            {% if field.help_text %}
+            <small class="help-text">{{ field.help_text }}</small>
+            {% endif %}
+            {% if field.errors %}
+            <div class="error-message">
+                {{ field.errors.0 }}
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="submit-button">保存</button>
+    </form>
+</div>
+
+<style>
+    .settings-container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .settings-container h1 {
+        margin-bottom: 2rem;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .settings-form {
+        background-color: var(--bg-sidebar);
+        padding: 2rem;
+        border-radius: 1rem;
+        border: 1px solid var(--border-color);
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: var(--text-primary);
+    }
+
+    .emoji-input, .theme-select {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid var(--border-color);
+        border-radius: 0.5rem;
+        background-color: var(--bg-main);
+        color: var(--text-primary);
+        font-size: 1rem;
+        transition: border-color var(--transition-base);
+    }
+
+    .emoji-input {
+        font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Android Emoji", EmojiSymbols, "EmojiOne Mozilla", "Twemoji Mozilla", "Segoe UI Symbol", "Noto Color Emoji Compat", "Noto Sans Symbols";
+        text-align: center;
+        font-size: 1.5rem;
+    }
+
+    .emoji-input::placeholder {
+        color: var(--text-secondary);
+        opacity: 0.5;
+        font-size: 1rem;
+    }
+
+    .emoji-input:focus, .theme-select:focus {
+        outline: none;
+        border-color: var(--accent-color);
+    }
+
+    .help-text {
+        display: block;
+        margin-top: 0.25rem;
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+    }
+
+    .error-message {
+        color: var(--danger-color);
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+
+    .submit-button {
+        width: 100%;
+        padding: 0.75rem;
+        background-color: var(--accent-color);
+        color: white;
+        border: none;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color var(--transition-base);
+    }
+
+    .submit-button:hover {
+        opacity: 0.9;
+    }
+</style>
+{% endblock %}

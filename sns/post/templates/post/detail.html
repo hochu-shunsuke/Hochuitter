@@ -9,7 +9,7 @@
 <div id="parent-post">
     <article class="post">
         <div class="post-header">
-            <a href="{% url 'social:userpage' user_id=post.user.id %}" class="user-link">
+            <a href="{% url 'post:user_posts' user_id=post.user.id %}" class="user-link">
                 @{{ post.user }}
             </a>
         </div>
@@ -22,12 +22,12 @@
             <div class="post-actions">
                 {% if user_id %}
                     <button class="action-button like-button {% if post.is_liked %}liked{% endif %}" data-post-id="{{ post.id }}">
-                        <span class="icon">♥</span>
+                        <span class="icon">{{ profile.like_emoji }}</span>
                         <span class="count like-count" data-post-id="{{ post.id }}">{{ post.like_count }}</span>
                     </button>
                     
                     <button class="action-button bookmark-button">
-                        <span class="icon">🔖</span>
+                        <span class="icon">{{ profile.bookmark_emoji }}</span>
                     </button>
                 {% else %}
                     <button class="action-button" disabled>
@@ -72,7 +72,7 @@
     {% for comment in comments %}
     <article class="comment">
         <div class="post-header">
-            <a href="{% url 'social:userpage' user_id=comment.user.id %}" class="user-link">
+            <a href="{% url 'post:user_posts' user_id=comment.user.id %}" class="user-link">
                 @{{ comment.user }}
             </a>
         </div>
@@ -85,7 +85,7 @@
             <div class="post-actions">
                 {% if user_id %}
                     <button class="action-button like-button comment-like-button {% if request.user in comment.liked_users.all %}liked{% endif %}" data-comment-id="{{ comment.id }}">
-                        <span class="icon">♥</span>
+                        <span class="icon">{{ profile.like_emoji }}</span>
                         <span class="count comment-like-count" data-comment-id="{{ comment.id }}">{{ comment.like_count }}</span>
                     </button>
                 {% else %}
@@ -329,36 +329,38 @@
         const textarea = document.querySelector('.post-textarea');
         const counter = document.querySelector('.character-counter');
         
-        function updateCounter() {
-            const length = textarea.value.length;
-            counter.textContent = `${length} / 500`;
-            
-            if (length >= 450) {
-                counter.classList.add('warning');
-            } else {
-                counter.classList.remove('warning');
+        if (textarea && counter) {
+            function updateCounter() {
+                const length = textarea.value.length;
+                counter.textContent = `${length} / 500`;
+                
+                if (length >= 450) {
+                    counter.classList.add('warning');
+                } else {
+                    counter.classList.remove('warning');
+                }
             }
-        }
 
-        function autoResize() {
-            textarea.style.height = 'auto';
-            textarea.style.height = Math.max(180, textarea.scrollHeight) + 'px';
-        }
+            function autoResize() {
+                textarea.style.height = 'auto';
+                textarea.style.height = Math.max(180, textarea.scrollHeight) + 'px';
+            }
 
-        textarea.addEventListener('input', function() {
+            textarea.addEventListener('input', function() {
+                updateCounter();
+                autoResize();
+            });
+
+            // 初期化
             updateCounter();
             autoResize();
-        });
 
-        // 初期化
-        updateCounter();
-        autoResize();
-
-        // フォーカス時に自動的にカーソルを合わせる
-        textarea.focus();
+            // フォーカス時に自動的にカーソルを合わせる
+            textarea.focus();
+        }
 
         // いいねボタンの処理
-        document.querySelectorAll('.like-button').forEach(button => {
+        document.querySelectorAll('.like-button:not(.comment-like-button)').forEach(button => {
             button.addEventListener('click', async function() {
                 const postId = this.getAttribute('data-post-id');
                 

@@ -2,10 +2,21 @@ from django.db import models
 from django.contrib.auth.models import User
 
 class Profile(models.Model):
-    user=models.OneToOneField(User,on_delete=models.CASCADE) #各Userに対しProfileは一つしかないことの明示，Userが削除されたら自動で消える(on_deleteの部分)
-    date_joined=models.DateTimeField(auto_now_add=True) #サービスに登録した日時
-    bio=models.TextField(max_length=400) #biography(ユーザの自己紹介やプロフィールの説明文)
-    icon_picture=models.ImageField(upload_to='profile_pics/', blank=True, null=True) #ImageFieldではdjangoがファイルを扱うためのAPIを提供してくれる．#TODO:Django documentation
+    THEME_CHOICES = [
+        ('light', 'ライトモード'),
+        ('dark', 'ダークモード'),
+    ]
+    
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    date_joined = models.DateTimeField(auto_now_add=True)
+    bio = models.TextField(max_length=400)
+    icon_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
+    
+    # UI設定
+    like_emoji = models.CharField(max_length=10, default='❤️')
+    comment_emoji = models.CharField(max_length=10, default='💭')
+    bookmark_emoji = models.CharField(max_length=10, default='🔖')
+    theme = models.CharField(max_length=5, choices=THEME_CHOICES, default='light')
     
     
     def __str__(self):
@@ -50,4 +61,3 @@ class Follow(models.Model):
     
     class Meta:
         unique_together=('follower','followed') #unique_togetherは一位制約性をデータベースレベルで担保するから，同一ユーザの重複フォローを防げる!!!!
-        

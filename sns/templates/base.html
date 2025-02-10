@@ -337,7 +337,7 @@
         }
     </style>
 </head>
-<body>
+<body class="{% block body_class %}{% if profile.theme == 'dark' %}dark-mode{% endif %}{% endblock %}">
     <div class="layout-container">
         <!-- 左サイドバー -->
         <div id="sidebar-left">
@@ -351,7 +351,8 @@
                             <a href="{% url 'post:create_post' %}"><button class="nav-button">✏️ ポストする</button></a>
                             <a href="{% url 'post:index' %}"><button class="nav-button">💬 メッセージ</button></a>
                             <a href="{% url 'post:index' %}"><button class="nav-button">🔖 ブックマーク</button></a>
-                            <a href="{% url 'social:userpage' user_id %}"><button class="nav-button">👤 マイページ</button></a>
+                            <a href="{% url 'post:user_posts' user_id=user_id %}"><button class="nav-button">👤 マイページ</button></a>
+                            <a href="{% url 'social:settings' %}"><button class="nav-button">⚙️ 設定</button></a>
                         {% endif %}
                     </nav>
                 </div>
@@ -392,26 +393,11 @@
             <div class="sidebar-content">
                 <h2>トレンド</h2>
                 <!-- トレンドコンテンツ -->
-                <div class="theme-toggle">
-                    <button id="theme-toggle" class="theme-button">💡 テーマ切替</button>
-                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // テーマの初期設定
-        const isDarkMode = localStorage.getItem('darkMode') === 'true';
-        if (isDarkMode) {
-            document.body.classList.add('dark-mode');
-        }
-
-        // テーマ切り替え
-        document.getElementById('theme-toggle').addEventListener('click', () => {
-            document.body.classList.toggle('dark-mode');
-            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
-        });
-
         // メッセージの自動消去
         document.addEventListener('DOMContentLoaded', () => {
             const messages = document.querySelectorAll('.message');

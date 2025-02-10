@@ -1,20 +1,9 @@
 from django.urls import path
-from post import views
+from . import views
 
-app_name='social'
+app_name = 'social'
 
-"""
-sns/urls.pyにて
-path('social/',include('social.urls'))
-と設定したため,socialアプリのurlの先頭には social/ がつくよ!!!
-"""
-main_urlpatterns=[
-    path('userpage/<int:user_id>/', views.index, name='userpage')
-    #nameを用いるとurlが変更されても動的にnameの値で対応できる!!
+urlpatterns = [
+    path('follow/<str:username>/', views.toggle_follow, name='toggle_follow'),
+    path('settings/', views.settings, name='settings'),
 ]
-
-api_urlpatterns=[
-    #APIって何に使う？システム構成ちゃんと考えてから作成しよう
-]
-
-urlpatterns=main_urlpatterns+api_urlpatterns
