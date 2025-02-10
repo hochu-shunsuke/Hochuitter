@@ -29,10 +29,10 @@
                         <span class="count like-count" data-post-id="{{ post.id }}">{{ post.like_count }}</span>
                     </button>
                     
-                    <button class="action-button comment-button">
+                    <a href="{% url 'post:post_detail' post_id=post.id %}" class="action-button comment-button">
                         <span class="icon">💬</span>
-                        <span class="count">{{ post.comment_count }}</span>
-                    </button>
+                        <span class="count">{{ post.comments_count }}</span>
+                    </a>
                     
                     <button class="action-button bookmark-button">
                         <span class="icon">🔖</span>
@@ -222,4 +222,5 @@
         });
     });
 </script>
+
 {% endblock %}

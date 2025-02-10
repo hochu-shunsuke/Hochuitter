@@ -1,0 +1,431 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header">
+    <h1>投稿詳細</h1>
+</div>
+
+<!-- 親投稿 -->
+<div id="parent-post">
+    <article class="post">
+        <div class="post-header">
+            <a href="{% url 'social:userpage' user_id=post.user.id %}" class="user-link">
+                @{{ post.user }}
+            </a>
+        </div>
+        
+        <div class="post-content">
+            {{ post.content }}
+        </div>
+        
+        <div class="post-footer">
+            <div class="post-actions">
+                {% if user_id %}
+                    <button class="action-button like-button {% if post.is_liked %}liked{% endif %}" data-post-id="{{ post.id }}">
+                        <span class="icon">♥</span>
+                        <span class="count like-count" data-post-id="{{ post.id }}">{{ post.like_count }}</span>
+                    </button>
+                    
+                    <button class="action-button bookmark-button">
+                        <span class="icon">🔖</span>
+                    </button>
+                {% else %}
+                    <button class="action-button" disabled>
+                        <span class="icon">♥</span>
+                        <span class="count">{{ post.like_count }}</span>
+                    </button>
+                {% endif %}
+            </div>
+            <time class="post-date">{{ post.post_date }}</time>
+        </div>
+    </article>
+</div>
+
+<!-- コメント投稿フォーム -->
+{% if user_id %}
+<div class="post-form-container">
+    <form method="post" class="post-form">
+        {% csrf_token %}
+        <div class="form-group">
+            <textarea 
+                name="{{ comment_form.content.name }}" 
+                id="{{ comment_form.content.id_for_label }}" 
+                placeholder="コメントを入力..."
+                class="post-textarea"
+                maxlength="500"
+                rows="4"
+            ></textarea>
+            <div class="form-footer">
+                <span class="character-counter">0 / 500</span>
+                <div class="form-actions">
+                    <button type="submit" class="button submit-button">コメントする</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endif %}
+
+<!-- コメント一覧 -->
+<div id="comments">
+    <h2>コメント一覧</h2>
+    {% for comment in comments %}
+    <article class="comment">
+        <div class="post-header">
+            <a href="{% url 'social:userpage' user_id=comment.user.id %}" class="user-link">
+                @{{ comment.user }}
+            </a>
+        </div>
+        
+        <div class="post-content">
+            {{ comment.content }}
+        </div>
+        
+        <div class="post-footer">
+            <div class="post-actions">
+                {% if user_id %}
+                    <button class="action-button like-button comment-like-button {% if request.user in comment.liked_users.all %}liked{% endif %}" data-comment-id="{{ comment.id }}">
+                        <span class="icon">♥</span>
+                        <span class="count comment-like-count" data-comment-id="{{ comment.id }}">{{ comment.like_count }}</span>
+                    </button>
+                {% else %}
+                    <button class="action-button" disabled>
+                        <span class="icon">♥</span>
+                        <span class="count">{{ comment.like_count }}</span>
+                    </button>
+                {% endif %}
+            </div>
+            <time class="post-date">{{ comment.post_date }}</time>
+        </div>
+    </article>
+    {% empty %}
+    <div class="empty-state">
+        <p>コメントがありません</p>
+    </div>
+    {% endfor %}
+</div>
+
+<style>
+    .page-header {
+        margin-bottom: var(--post-spacing);
+    }
+
+    .page-header h1 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    #parent-post {
+        margin-bottom: 2rem;
+    }
+
+    .post, .comment {
+        background-color: var(--bg-sidebar);
+        border: 1px solid var(--border-color);
+        border-radius: 1rem;
+        padding: var(--post-spacing);
+        margin-bottom: 1rem;
+    }
+
+    .comment {
+        margin-left: 1rem;
+    }
+
+    .post-header {
+        margin-bottom: 1rem;
+    }
+
+    .user-link {
+        text-decoration: none;
+        color: var(--accent-color);
+        font-weight: 500;
+        font-size: 1rem;
+        transition: color var(--transition-base);
+    }
+
+    .user-link:hover {
+        text-decoration: underline;
+    }
+
+    .post-content {
+        margin: 1rem 0;
+        line-height: 1.6;
+        color: var(--text-primary);
+        word-wrap: break-word;
+        font-size: 1rem;
+    }
+
+    .post-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: var(--post-spacing);
+    }
+
+    .post-actions {
+        display: flex;
+        gap: 1.5rem;
+    }
+
+    .action-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem;
+        background: none;
+        border: none;
+        border-radius: 9999px;
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all var(--transition-base);
+    }
+
+    .post-form-container {
+        background-color: var(--bg-sidebar);
+        border: 1px solid var(--border-color);
+        border-radius: 1rem;
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+
+    .post-form {
+        padding: var(--post-spacing);
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: var(--post-spacing);
+    }
+
+    .post-textarea {
+        width: 100%;
+        min-height: 180px;
+        padding: var(--post-spacing);
+        background-color: var(--bg-main);
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
+        border-radius: 0.75rem;
+        resize: vertical;
+        font-size: 1.125rem;
+        line-height: 1.6;
+        transition: all var(--transition-base);
+        font-family: inherit;
+        box-sizing: border-box;
+    }
+
+    .post-textarea:focus {
+        outline: none;
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 2px var(--accent-color-alpha);
+    }
+
+    .post-textarea::placeholder {
+        color: var(--text-secondary);
+    }
+
+    .form-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: var(--post-spacing);
+        border-top: 1px solid var(--border-color);
+    }
+
+    .character-counter {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        font-weight: 500;
+    }
+
+    .character-counter.warning {
+        color: #e11d48;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 9999px;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all var(--transition-base);
+        text-decoration: none;
+    }
+
+    .submit-button {
+        background-color: var(--accent-color);
+        color: white;
+        min-width: 100px;
+    }
+
+    .submit-button:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+    }
+
+    .submit-button:active {
+        transform: translateY(0);
+    }
+
+    .action-button:hover {
+        color: var(--accent-color);
+        background-color: var(--hover-bg);
+    }
+
+    .like-button:hover {
+        color: #e11d48;
+    }
+
+    .action-button.liked {
+        color: #e11d48;
+    }
+
+    .action-button:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+
+    .action-button .icon {
+        font-size: 1.25rem;
+    }
+
+    .action-button .count {
+        min-width: 1rem;
+    }
+
+    .post-date {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+    }
+
+    #comments h2 {
+        margin: 2rem 0 1rem;
+        font-size: 1.25rem;
+        color: var(--text-primary);
+    }
+
+    .empty-state {
+        padding: var(--post-spacing);
+        text-align: center;
+        color: var(--text-secondary);
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const textarea = document.querySelector('.post-textarea');
+        const counter = document.querySelector('.character-counter');
+        
+        function updateCounter() {
+            const length = textarea.value.length;
+            counter.textContent = `${length} / 500`;
+            
+            if (length >= 450) {
+                counter.classList.add('warning');
+            } else {
+                counter.classList.remove('warning');
+            }
+        }
+
+        function autoResize() {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.max(180, textarea.scrollHeight) + 'px';
+        }
+
+        textarea.addEventListener('input', function() {
+            updateCounter();
+            autoResize();
+        });
+
+        // 初期化
+        updateCounter();
+        autoResize();
+
+        // フォーカス時に自動的にカーソルを合わせる
+        textarea.focus();
+
+        // いいねボタンの処理
+        document.querySelectorAll('.like-button').forEach(button => {
+            button.addEventListener('click', async function() {
+                const postId = this.getAttribute('data-post-id');
+                
+                try {
+                    const response = await fetch(`/${postId}/toggle/like/`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}',
+                            'Content-Type': 'application/json',
+                        },
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    
+                    const data = await response.json();
+                    
+                    // いいねカウントの更新
+                    const likeCount = document.querySelector(`.like-count[data-post-id="${postId}"]`);
+                    if (likeCount) {
+                        likeCount.textContent = data.like_count;
+                    }
+                    
+                    // ボタンの状態を更新
+                    this.classList.toggle('liked', data.is_liked);
+                    
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            });
+        });
+
+        // コメントのいいねボタンの処理
+        document.querySelectorAll('.comment-like-button').forEach(button => {
+            button.addEventListener('click', async function() {
+                const commentId = this.getAttribute('data-comment-id');
+                
+                try {
+                    const response = await fetch(`/comment/${commentId}/toggle/like/`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}',
+                            'Content-Type': 'application/json',
+                        },
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    
+                    const data = await response.json();
+                    
+                    // いいねカウントの更新
+                    const likeCount = document.querySelector(`.comment-like-count[data-comment-id="${commentId}"]`);
+                    if (likeCount) {
+                        likeCount.textContent = data.like_count;
+                    }
+                    
+                    // ボタンの状態を更新
+                    this.classList.toggle('liked');
+                    
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
