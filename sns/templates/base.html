@@ -16,6 +16,10 @@
             --danger-color: #dc2626;
             --accent-color-alpha: rgba(26, 145, 218, 0.2);
             --transition-base: 0.2s ease;
+            --success-color: #10b981;
+            --error-color: #ef4444;
+            --warning-color: #f59e0b;
+            --info-color: #3b82f6;
 
             /* レイアウトサイズ */
             --sidebar-width: 280px;
@@ -34,6 +38,10 @@
             --hover-bg: #1c2732;
             --accent-color: #1d9bf0;
             --danger-color: #ef4444;
+            --success-color: #34d399;
+            --error-color: #f87171;
+            --warning-color: #fbbf24;
+            --info-color: #60a5fa;
         }
 
         body {
@@ -51,6 +59,39 @@
             justify-content: center;
             width: 100%;
             min-height: 100vh;
+        }
+
+        /* メッセージスタイル */
+        .messages {
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .message {
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+        }
+
+        .message.error {
+            background-color: var(--error-color);
+            color: white;
+        }
+
+        .message.success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .message.warning {
+            background-color: var(--warning-color);
+            color: white;
+        }
+
+        .message.info {
+            background-color: var(--info-color);
+            color: white;
         }
 
         /* サイドバー */
@@ -142,6 +183,8 @@
             margin: 0 var(--sidebar-width);
             background-color: var(--bg-main);
             transition: background-color var(--transition-base);
+            padding: var(--content-padding);
+            box-sizing: border-box;
         }
 
         /* アカウント情報 */
@@ -244,6 +287,54 @@
             scrollbar-width: thin;
             scrollbar-color: var(--border-color) transparent;
         }
+
+        /* フォームスタイル */
+        .form-container {
+            max-width: 400px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: var(--bg-sidebar);
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: border-color var(--transition-base);
+            box-sizing: border-box;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .form-button {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color var(--transition-base);
+        }
+
+        .form-button:hover {
+            background-color: var(--accent-color-alpha);
+        }
     </style>
 </head>
 <body>
@@ -284,6 +375,15 @@
 
         <!-- メインコンテンツ -->
         <main id="main-content">
+            {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
             {% block content %}{% endblock %}
         </main>
 
@@ -310,6 +410,24 @@
         document.getElementById('theme-toggle').addEventListener('click', () => {
             document.body.classList.toggle('dark-mode');
             localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        });
+
+        // メッセージの自動消去
+        document.addEventListener('DOMContentLoaded', () => {
+            const messages = document.querySelectorAll('.message');
+            messages.forEach(message => {
+                // フェードアウトのためのスタイル追加
+                message.style.transition = 'opacity 0.5s ease-in-out';
+                
+                // 10秒後にフェードアウトを開始
+                setTimeout(() => {
+                    message.style.opacity = '0';
+                    // フェードアウト完了後に要素を削除
+                    setTimeout(() => {
+                        message.remove();
+                    }, 500);
+                }, 5000);
+            });
         });
     </script>
 </body>
