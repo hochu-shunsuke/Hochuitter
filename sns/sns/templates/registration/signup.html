@@ -3,14 +3,25 @@
 {% block title %}アカウントを作成{% endblock %}
 
 {% block content %}
-<div>
+<div class="form-container">
+    <h2>アカウントを作成</h2>
     <form method="post" action="{% url 'signup'%}">
         {% csrf_token %}
-        <input type="text" name="username" placeholder="ユーザー名" required>
-        <input type="password" name="password1" placeholder="パスワード" required>
-        <input type="password" name="password2" placeholder="パスワード確認" required>
-        <button type="submit">作成</button>
+        <div class="form-group">
+            <input type="text" name="username" class="form-input" placeholder="ユーザー名" required>
+        </div>
+        <div class="form-group">
+            <input type="password" name="password1" class="form-input" placeholder="パスワード" required>
+        </div>
+        <div class="form-group">
+            <input type="password" name="password2" class="form-input" placeholder="パスワード確認" required>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="form-button">アカウントを作成</button>
+        </div>
     </form>
-    <a href="{% url 'login' %}">ログイン</a>
+    <div style="text-align: center; margin-top: 1rem;">
+        <a href="{% url 'login' %}" style="color: var(--accent-color); text-decoration: none;">既にアカウントをお持ちの方はこちら</a>
+    </div>
 </div>
 {% endblock %}
