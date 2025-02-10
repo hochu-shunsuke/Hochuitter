@@ -43,13 +43,24 @@ def index(request, user_id=None):
 
     comment_form = CommentForm()
 
-    return render(request, 'post/index.html', {
+    context = {
         'username': current_user.username if current_user.is_authenticated else None,
         'parent_posts': posts,
         'user_id': current_user_id,
         'page_title': page_title,
-        'comment_form': comment_form
-    })
+        'comment_form': comment_form,
+        'is_user_page': bool(user_id)
+    }
+
+    # ユーザーページの場合はフォロー状態を追加
+    if user_id and current_user.is_authenticated and current_user.id != user_id:
+        context['target_user'] = target_user
+        context['is_following'] = Follow.objects.filter(
+            follower=current_user,
+            followed=target_user
+        ).exists()
+
+    return render(request, 'post/index.html', context)
 
 @login_required #Djangoのデコレータ.ログアウト時はログインページにリダイレクトされる!!!!!
 def create_post(request):

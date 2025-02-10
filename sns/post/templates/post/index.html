@@ -6,6 +6,14 @@
     {% if not user_id %}
         <p class="subtitle">ログインしてSNSを楽しんでね。犯罪以外は何してもok!! // @hochu@管理人@</p>
     {% endif %}
+    {% if is_user_page and user_id and user_id != target_user.id and target_user %}
+        <div class="user-actions">
+            <button class="follow-button {% if is_following %}following{% endif %}" 
+                    data-username="{{ target_user.username }}">
+                <span class="follow-text">{% if is_following %}フォロー中{% else %}フォローする{% endif %}</span>
+            </button>
+        </div>
+    {% endif %}
 </div>
 
 <div id="timeline">
@@ -16,12 +24,6 @@
                 <a href="{% url 'post:user_posts' user_id=post.user.id %}" class="user-link">
                     @{{ post.user }}
                 </a>
-                {% if user_id and user_id != post.user.id %}
-                    <button class="follow-button {% if post.user.is_followed %}following{% endif %}" 
-                            data-username="{{ post.user.username }}">
-                        <span class="follow-text">{% if post.user.is_followed %}フォロー中{% else %}フォローする{% endif %}</span>
-                    </button>
-                {% endif %}
             </div>
         </div>
         
@@ -84,6 +86,12 @@
         font-size: 0.875rem;
     }
 
+    .user-actions {
+        margin-top: 1rem;
+        display: flex;
+        gap: 1rem;
+    }
+
     #timeline {
         background-color: var(--bg-sidebar);
         border-radius: 1rem;
@@ -112,7 +120,7 @@
     .user-info {
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        gap: 1rem;
     }
 
     .user-link {
