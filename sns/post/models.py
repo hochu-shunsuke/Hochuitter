@@ -28,6 +28,7 @@ class Post(models.Model):
 class Comment(models.Model):
     content=models.CharField(max_length=280)
     like_count=models.PositiveIntegerField(default=0)
+    liked_users=models.ManyToManyField(User,related_name='liked_comments',blank=True) #いいねしたユーザ
     comment_count=models.PositiveIntegerField(default=0) #返信数(階層が1つ下の返信のみをカウント)
     post_date=models.DateTimeField(auto_now_add=True)
     user=models.ForeignKey(

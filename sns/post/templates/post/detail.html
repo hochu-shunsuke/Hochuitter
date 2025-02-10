@@ -82,6 +82,19 @@
         </div>
         
         <div class="post-footer">
+            <div class="post-actions">
+                {% if user_id %}
+                    <button class="action-button like-button comment-like-button {% if request.user in comment.liked_users.all %}liked{% endif %}" data-comment-id="{{ comment.id }}">
+                        <span class="icon">♥</span>
+                        <span class="count comment-like-count" data-comment-id="{{ comment.id }}">{{ comment.like_count }}</span>
+                    </button>
+                {% else %}
+                    <button class="action-button" disabled>
+                        <span class="icon">♥</span>
+                        <span class="count">{{ comment.like_count }}</span>
+                    </button>
+                {% endif %}
+            </div>
             <time class="post-date">{{ comment.post_date }}</time>
         </div>
     </article>
@@ -372,6 +385,41 @@
                     
                     // ボタンの状態を更新
                     this.classList.toggle('liked', data.is_liked);
+                    
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            });
+        });
+
+        // コメントのいいねボタンの処理
+        document.querySelectorAll('.comment-like-button').forEach(button => {
+            button.addEventListener('click', async function() {
+                const commentId = this.getAttribute('data-comment-id');
+                
+                try {
+                    const response = await fetch(`/comment/${commentId}/toggle/like/`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}',
+                            'Content-Type': 'application/json',
+                        },
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    
+                    const data = await response.json();
+                    
+                    // いいねカウントの更新
+                    const likeCount = document.querySelector(`.comment-like-count[data-comment-id="${commentId}"]`);
+                    if (likeCount) {
+                        likeCount.textContent = data.like_count;
+                    }
+                    
+                    // ボタンの状態を更新
+                    this.classList.toggle('liked');
                     
                 } catch (error) {
                     console.error('Error:', error);

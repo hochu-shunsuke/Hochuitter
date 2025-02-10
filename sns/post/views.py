@@ -73,6 +73,18 @@ def toggle_like(request,post_id): #ここではユーザ一人単位のいいね
     post.save()
     return JsonResponse({'like_count':post.like_count}) #Ajax用のレスポンスを返す
 
+@login_required
+def toggle_comment_like(request, comment_id):
+    comment = get_object_or_404(Comment, id=comment_id)
+    if request.user in comment.liked_users.all():
+        comment.liked_users.remove(request.user)
+        comment.like_count -= 1
+    else:
+        comment.liked_users.add(request.user)
+        comment.like_count += 1
+    comment.save()
+    return JsonResponse({'like_count': comment.like_count})
+
 def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     comments = Comment.objects.filter(post=post, parent_comment=None)
