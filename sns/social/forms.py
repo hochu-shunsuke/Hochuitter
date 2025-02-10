@@ -9,20 +9,24 @@ class ProfileSettingsForm(forms.ModelForm):
             'like_emoji': forms.TextInput(attrs={
                 'maxlength': 1,
                 'class': 'emoji-input',
-                'placeholder': '❤️'
+                'placeholder': '絵文字を入力',
+                'style': 'height: 3rem;'
             }),
             'comment_emoji': forms.TextInput(attrs={
                 'maxlength': 1,
                 'class': 'emoji-input',
-                'placeholder': '💭'
+                'placeholder': '絵文字を入力',
+                'style': 'height: 3rem;'
             }),
             'bookmark_emoji': forms.TextInput(attrs={
                 'maxlength': 1,
                 'class': 'emoji-input',
-                'placeholder': '🔖'
+                'placeholder': '絵文字を入力',
+                'style': 'height: 3rem;'
             }),
             'theme': forms.Select(attrs={
-                'class': 'theme-select'
+                'class': 'theme-select',
+                'style': 'height: 3rem;'
             })
         }
         labels = {

@@ -19,7 +19,8 @@ def settings(request):
     return render(request, 'social/settings.html', {
         'form': form,
         'user_id': request.user.id,
-        'username': request.user.username
+        'username': request.user.username,
+        'profile': profile
     })
 
 @login_required

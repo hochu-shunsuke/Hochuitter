@@ -337,7 +337,7 @@
         }
     </style>
 </head>
-<body class="{% if profile.theme == 'dark' %}dark-mode{% endif %}">
+<body class="{% block body_class %}{% if profile.theme == 'dark' %}dark-mode{% endif %}{% endblock %}">
     <div class="layout-container">
         <!-- 左サイドバー -->
         <div id="sidebar-left">
