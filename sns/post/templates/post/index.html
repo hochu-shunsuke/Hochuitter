@@ -47,17 +47,17 @@
             <div class="post-actions">
                 {% if user_id %}
                     <button class="action-button like-button {% if post.is_liked %}liked{% endif %}" data-post-id="{{ post.id }}">
-                        <span class="icon">♥</span>
+                        <span class="icon">{{ profile.like_emoji }}</span>
                         <span class="count like-count" data-post-id="{{ post.id }}">{{ post.like_count }}</span>
                     </button>
                     
                     <a href="{% url 'post:post_detail' post_id=post.id %}" class="action-button comment-button">
-                        <span class="icon">💬</span>
+                        <span class="icon">{{ profile.comment_emoji }}</span>
                         <span class="count">{{ post.comments_count }}</span>
                     </a>
                     
                     <button class="action-button bookmark-button">
-                        <span class="icon">🔖</span>
+                        <span class="icon">{{ profile.bookmark_emoji }}</span>
                     </button>
                 {% else %}
                     <button class="action-button" disabled>
