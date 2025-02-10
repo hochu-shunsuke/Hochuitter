@@ -12,9 +12,17 @@
     {% for post in parent_posts %}
     <article class="post">
         <div class="post-header">
-            <a href="{% url 'social:userpage' user_id=post.user.id %}" class="user-link">
-                @{{ post.user }}
-            </a>
+            <div class="user-info">
+                <a href="{% url 'post:user_posts' user_id=post.user.id %}" class="user-link">
+                    @{{ post.user }}
+                </a>
+                {% if user_id and user_id != post.user.id %}
+                    <button class="follow-button {% if post.user.is_followed %}following{% endif %}" 
+                            data-username="{{ post.user.username }}">
+                        <span class="follow-text">{% if post.user.is_followed %}フォロー中{% else %}フォローする{% endif %}</span>
+                    </button>
+                {% endif %}
+            </div>
         </div>
         
         <div class="post-content">
@@ -101,6 +109,12 @@
         margin-bottom: 1rem;
     }
 
+    .user-info {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
     .user-link {
         text-decoration: none;
         color: var(--accent-color);
@@ -111,6 +125,36 @@
 
     .user-link:hover {
         text-decoration: underline;
+    }
+
+    .follow-button {
+        padding: 0.5rem 1rem;
+        border-radius: 9999px;
+        border: 1px solid var(--accent-color);
+        background: none;
+        color: var(--accent-color);
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all var(--transition-base);
+    }
+
+    .follow-button:hover {
+        background-color: var(--accent-color);
+        color: white;
+    }
+
+    .follow-button.following {
+        background-color: var(--accent-color);
+        color: white;
+    }
+
+    .follow-button.following:hover {
+        background-color: #dc2626;
+        border-color: #dc2626;
+    }
+
+    .follow-button.following:hover .follow-text {
+        content: 'フォロー解除';
     }
 
     .post-content {
@@ -187,6 +231,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // いいねボタンの処理
         document.querySelectorAll('.like-button').forEach(button => {
             button.addEventListener('click', async function() {
                 const postId = this.getAttribute('data-post-id');
@@ -214,6 +259,39 @@
                     
                     // ボタンの状態を更新
                     this.classList.toggle('liked', data.is_liked);
+                    
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            });
+        });
+
+        // フォローボタンの処理
+        document.querySelectorAll('.follow-button').forEach(button => {
+            button.addEventListener('click', async function() {
+                const username = this.getAttribute('data-username');
+                
+                try {
+                    const response = await fetch(`/social/follow/${username}/`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}',
+                            'Content-Type': 'application/json',
+                        },
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    
+                    const data = await response.json();
+                    
+                    // ボタンの状態を更新
+                    this.classList.toggle('following', data.status === 'followed');
+                    const followText = this.querySelector('.follow-text');
+                    if (followText) {
+                        followText.textContent = data.status === 'followed' ? 'フォロー中' : 'フォローする';
+                    }
                     
                 } catch (error) {
                     console.error('Error:', error);

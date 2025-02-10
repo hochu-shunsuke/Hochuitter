@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Post, Comment
-from django.urls import reverse_lazy, reverse #処理成功後の遷移先urlを引数に持つ,『urlの遅延評価』というらしい．
+from django.urls import reverse_lazy, reverse
 from .form import PostForm, CommentForm
 from django.contrib.auth.models import User
+from social.models import Follow
 from django.contrib.auth.decorators import login_required #ログイン状態でない場合はログインページにリダイレクトされる
 from django.http import JsonResponse #Ajax用のレスポンス(非同期処理)を返すために必要
 
@@ -29,9 +30,16 @@ def index(request, user_id=None):
         posts = Post.objects.all()[:50]
         page_title = "投稿一覧"
 
-    # 各投稿のコメント数を計算
+    # 各投稿のコメント数とフォロー状態を計算
     for post in posts:
         post.comments_count = Comment.objects.filter(post=post, parent_comment=None).count()
+        if current_user.is_authenticated and current_user.id != post.user.id:
+            post.user.is_followed = Follow.objects.filter(
+                follower=current_user,
+                followed=post.user
+            ).exists()
+        else:
+            post.user.is_followed = False
 
     comment_form = CommentForm()
 

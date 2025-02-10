@@ -4,7 +4,8 @@ from .views import create_post, index, toggle_like, toggle_comment_like, post_de
 app_name='post'
 
 urlpatterns=[
-    path('',index,name='index'),
+    path('', index, name='index'),
+    path('user/<int:user_id>/', index, name='user_posts'),
     path('create/',create_post,name='create_post'), #投稿作成用のURL
     path('<int:post_id>/toggle/like/',toggle_like,name='toggle_like'), #いいね切り替え用のURL
     path('comment/<int:comment_id>/toggle/like/',toggle_comment_like,name='toggle_comment_like'), #コメントのいいね切り替え用のURL

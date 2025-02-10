@@ -351,7 +351,7 @@
                             <a href="{% url 'post:create_post' %}"><button class="nav-button">✏️ ポストする</button></a>
                             <a href="{% url 'post:index' %}"><button class="nav-button">💬 メッセージ</button></a>
                             <a href="{% url 'post:index' %}"><button class="nav-button">🔖 ブックマーク</button></a>
-                            <a href="{% url 'social:userpage' user_id %}"><button class="nav-button">👤 マイページ</button></a>
+                            <a href="{% url 'post:user_posts' user_id=user_id %}"><button class="nav-button">👤 マイページ</button></a>
                         {% endif %}
                     </nav>
                 </div>
