@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Post, Comment
-from django.urls import reverse_lazy #処理成功後の遷移先urlを引数に持つ,『urlの遅延評価』というらしい．
+from django.urls import reverse_lazy, reverse #処理成功後の遷移先urlを引数に持つ,『urlの遅延評価』というらしい．
 from .form import PostForm, CommentForm
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required #ログイン状態でない場合はログインページにリダイレクトされる
@@ -73,10 +73,12 @@ def toggle_like(request,post_id): #ここではユーザ一人単位のいいね
     post.save()
     return JsonResponse({'like_count':post.like_count}) #Ajax用のレスポンスを返す
 
-@login_required
-def create_comment(request, post_id):
+def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
-    if request.method == 'POST':
+    comments = Comment.objects.filter(post=post, parent_comment=None)
+    comment_form = CommentForm()
+
+    if request.method == 'POST' and request.user.is_authenticated:
         form = CommentForm(request.POST)
         if form.is_valid():
             comment = form.save(commit=False)
@@ -88,5 +90,14 @@ def create_comment(request, post_id):
             post.comment_count = Comment.objects.filter(post=post, parent_comment=None).count()
             post.save()
             
-            return redirect('post:index')
-    return redirect('post:index')
+            return redirect('post:post_detail', post_id=post.id)
+    else:
+        form = CommentForm()
+
+    return render(request, 'post/detail.html', {
+        'post': post,
+        'comments': comments,
+        'comment_form': comment_form,
+        'user_id': request.user.id if request.user.is_authenticated else None,
+        'username': request.user.username if request.user.is_authenticated else None,
+    })
