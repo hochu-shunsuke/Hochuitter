@@ -6,6 +6,18 @@
     {% if not user_id %}
         <p class="subtitle">ログインしてSNSを楽しんでね。犯罪以外は何してもok!! // @hochu@管理人@</p>
     {% endif %}
+    {% if is_user_page %}
+        <div class="user-stats">
+            <div class="stat-item">
+                <span class="stat-label">フォロワー</span>
+                <span class="stat-value">{{ followers_count }}</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">フォロー中</span>
+                <span class="stat-value">{{ following_count }}</span>
+            </div>
+        </div>
+    {% endif %}
     {% if is_user_page and user_id and user_id != target_user.id and target_user %}
         <div class="user-actions">
             <button class="follow-button {% if is_following %}following{% endif %}" 
@@ -84,6 +96,32 @@
         margin-top: 0.5rem;
         color: var(--text-secondary);
         font-size: 0.875rem;
+    }
+
+    .user-stats {
+        display: flex;
+        gap: 2rem;
+        margin: 1rem 0;
+        padding: 1rem;
+        background-color: var(--bg-sidebar);
+        border-radius: 0.5rem;
+    }
+
+    .stat-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .stat-label {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+    }
+
+    .stat-value {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-primary);
     }
 
     .user-actions {

@@ -1,55 +1,42 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.contrib.auth.models import User
-from .models import Follow
-
-def get_follow_stats(request, username):
-    """
-    ユーザーのフォロー関連の統計情報を取得するビュー
-    """
-    user = get_object_or_404(User, username=username)
-    
-    # フォロワー数を取得
-    followers_count = Follow.objects.filter(followed=user).count()
-    
-    # フォロー中のユーザー数を取得
-    following_count = Follow.objects.filter(follower=user).count()
-    
-    # 相互フォロー（フレンド）数を取得
-    friends_count = Follow.objects.filter(
-        follower=user,
-        ff_is_active=True
-    ).count()
-    
-    stats = {
-        'followers_count': followers_count,
-        'following_count': following_count,
-        'friends_count': friends_count
-    }
-    
-    return JsonResponse(stats)
+from .models import Follow, Profile
+from .forms import ProfileSettingsForm
 
 @login_required
-def follow_user(request, username):
-    """
-    ユーザーをフォローするビュー
-    """
+def settings(request):
+    profile, created = Profile.objects.get_or_create(user=request.user)
+    if request.method == 'POST':
+        form = ProfileSettingsForm(request.POST, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect('post:index')
+    else:
+        form = ProfileSettingsForm(instance=profile)
+    
+    return render(request, 'social/settings.html', {
+        'form': form,
+        'user_id': request.user.id,
+        'username': request.user.username
+    })
+
+@login_required
+def toggle_follow(request, username):
     target_user = get_object_or_404(User, username=username)
     
     # 自分自身をフォローできないようにする
     if request.user == target_user:
-        return JsonResponse({'error': '自分自身をフォローすることはできません'}, status=400)
-    
-    # すでにフォローしている場合は解除
-    if Follow.objects.filter(follower=request.user, followed=target_user).exists():
-        Follow.objects.filter(follower=request.user, followed=target_user).delete()
-        return JsonResponse({'status': 'unfollowed'})
-    
-    # フォローする
-    follow = Follow.objects.create(
+        return JsonResponse({'error': 'Cannot follow yourself'}, status=400)
+        
+    follow_obj, created = Follow.objects.get_or_create(
         follower=request.user,
         followed=target_user
     )
     
+    if not created:  # すでにフォローしている場合は解除
+        follow_obj.delete()
+        return JsonResponse({'status': 'unfollowed'})
+        
     return JsonResponse({'status': 'followed'})

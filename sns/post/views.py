@@ -59,6 +59,9 @@ def index(request, user_id=None):
             follower=current_user,
             followed=target_user
         ).exists()
+        # フォロワー数とフォロー数を追加
+        context['followers_count'] = Follow.objects.filter(followed=target_user).count()
+        context['following_count'] = Follow.objects.filter(follower=target_user).count()
 
     return render(request, 'post/index.html', context)
 
