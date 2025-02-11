@@ -82,13 +82,24 @@
         font-size: 1.5rem;
     }
 
+    .number-input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid var(--border-color);
+        border-radius: 0.5rem;
+        background-color: var(--bg-main);
+        color: var(--text-primary);
+        font-size: 1rem;
+        transition: border-color var(--transition-base);
+    }
+
     .emoji-input::placeholder {
         color: var(--text-secondary);
         opacity: 0.5;
         font-size: 1rem;
     }
 
-    .emoji-input:focus, .theme-select:focus {
+    .emoji-input:focus, .theme-select:focus, .number-input:focus {
         outline: none;
         border-color: var(--accent-color);
     }
