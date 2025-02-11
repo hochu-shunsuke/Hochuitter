@@ -15,31 +15,31 @@
                 <h1>Hochuitter</h1>
                 <div class="nav-wrapper">
                     <nav>
-                        <a href="{% url 'post:index' %}"><button class="nav-button">🏠 ホーム</button></a>
-                        <a href="{% url 'post:index' %}"><button class="nav-button">🔍 検索</button></a>
+                        <a href="{% url 'post:index' %}" class="nav-button" aria-label="ホーム">🏠 ホーム</a>
+                        <a href="{% url 'post:index' %}" class="nav-button" aria-label="検索">🔍 検索</a>
                         {% if user_id %}
-                            <a href="{% url 'post:create_post' %}"><button class="nav-button">✏️ ポストする</button></a>
-                            <a href="{% url 'post:index' %}"><button class="nav-button">💬 メッセージ</button></a>
-                            <a href="{% url 'post:threads' %}"><button class="nav-button">📜 スレッド</button></a>
-                            <a href="{% url 'post:bookmarks' %}"><button class="nav-button">{{ profile.bookmark_emoji }} ブックマーク</button></a>
-                            <a href="{% url 'social:user_profile' username=request.user.username %}"><button class="nav-button">👤 マイページ</button></a>
-                            <a href="{% url 'social:settings' %}"><button class="nav-button">⚙️ 設定</button></a>
+                            <a href="{% url 'post:create_post' %}" class="nav-button" aria-label="ポストする">✏️ ポストする</a>
+                            <a href="{% url 'post:index' %}" class="nav-button" aria-label="メッセージ">💬 メッセージ</a>
+                            <a href="{% url 'post:threads' %}" class="nav-button" aria-label="スレッド">📜 スレッド</a>
+                            <a href="{% url 'post:bookmarks' %}" class="nav-button" aria-label="ブックマーク">{{ profile.bookmark_emoji }} ブックマーク</a>
+                            <a href="{% url 'social:user_profile' username=request.user.username %}" class="nav-button" aria-label="マイページ">👤 マイページ</a>
+                            <a href="{% url 'social:settings' %}" class="nav-button" aria-label="設定">⚙️ 設定</a>
                         {% endif %}
                     </nav>
                 </div>
 
                 {% if user_id %}
                 <div class="account-info">
-                    <div class="user-name">{{ user }}</div>
-                    <form method="post" action="{% url 'logout' %}" onsubmit="return confirm('ログアウトしますか？');">
+                    <div class="user-name" aria-label="現在のユーザー名">{{ user }}</div>
+                    <form method="post" action="{% url 'logout' %}" onsubmit="return confirm('ログアウトしますか？');" class="nav-form">
                         {% csrf_token %}
                         <button type="submit" class="nav-button danger">🚪 ログアウト</button>
                     </form>
                 </div>
                 {% else %}
                 <div class="account-info">
-                    <a href="{% url 'login' %}"><button class="nav-button">🔑 ログイン</button></a>
-                    <a href="{% url 'signup' %}"><button class="nav-button">📝 新規登録</button></a>
+                    <a href="{% url 'login' %}" class="nav-button" aria-label="ログイン">🔑 ログイン</a>
+                    <a href="{% url 'signup' %}" class="nav-button" aria-label="新規登録">📝 新規登録</a>
                 </div>
                 {% endif %}
             </div>
@@ -48,7 +48,7 @@
         <!-- メインコンテンツ -->
         <main id="main-content">
             {% if messages %}
-            <div class="messages">
+            <div class="messages" role="alert" aria-live="polite">
                 {% for message in messages %}
                 <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
                     {{ message }}

@@ -154,6 +154,7 @@ body {
     gap: 1rem;
     width: 100%;
     padding: 0.875rem 1.25rem;
+    margin: 0;
     background: none;
     border: none;
     border-radius: 9999px;
@@ -163,11 +164,29 @@ body {
     cursor: pointer;
     transition: all var(--transition-base);
     text-align: left;
+    text-decoration: none;
+    position: relative;
+    outline: none;
+    box-sizing: border-box;
 }
 
 .nav-button:hover {
     background-color: var(--hover-bg);
     transform: translateX(4px);
+}
+
+.nav-button:focus {
+    background-color: var(--hover-bg);
+    box-shadow: inset 0 0 0 2px var(--accent-color);
+    outline: none;
+}
+
+.nav-button:focus:not(:focus-visible) {
+    box-shadow: none;
+}
+
+.nav-button:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--accent-color);
 }
 
 .nav-button.danger {
@@ -178,6 +197,54 @@ body {
 .nav-button.danger:hover {
     background-color: var(--danger-color);
     color: white;
+}
+
+.nav-button.danger:focus,
+.nav-button.danger:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--danger-color);
+}
+
+/* ナビゲーション要素の共通スタイル */
+.nav-wrapper,
+.nav-wrapper *,
+.account-info,
+.account-info * {
+    box-sizing: border-box;
+    max-width: 100%;
+}
+
+/* キーボードナビゲーション時のスタイル */
+.nav-wrapper nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0;
+}
+
+.nav-wrapper nav a {
+    display: block;
+    width: 100%;
+}
+
+/* ナビゲーションフォーム */
+.nav-form {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+/* ナビゲーションボタンの修正されたスタイル */
+.nav-button {
+    max-width: 100%;
+    margin: 0;
+    padding: 0.875rem 1.25rem;
+    box-sizing: border-box;
+}
+
+.nav-wrapper a.nav-button,
+.nav-form button.nav-button {
+    padding: 0.875rem 1.25rem;
 }
 
 /* メインコンテンツ */
