@@ -350,7 +350,7 @@
                         {% if user_id %}
                             <a href="{% url 'post:create_post' %}"><button class="nav-button">✏️ ポストする</button></a>
                             <a href="{% url 'post:index' %}"><button class="nav-button">💬 メッセージ</button></a>
-                            <a href="{% url 'post:index' %}"><button class="nav-button">🔖 ブックマーク</button></a>
+                            <a href="{% url 'post:bookmarks' %}"><button class="nav-button">{{ profile.bookmark_emoji }} ブックマーク</button></a>
                             <a href="{% url 'social:user_profile' username=request.user.username %}"><button class="nav-button">👤 マイページ</button></a>
                             <a href="{% url 'social:settings' %}"><button class="nav-button">⚙️ 設定</button></a>
                         {% endif %}

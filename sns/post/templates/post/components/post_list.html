@@ -25,9 +25,9 @@
                     <span class="count">{{ post.comments_count }}</span>
                 </a>
                 
-                <button class="action-button bookmark-button {% if post.is_bookmarked %}bookmarked{% endif %}" data-post-id="{{ post.id }}">
-                    <span class="icon">{{ profile.bookmark_emoji }}</span>
-                </button>
+                    <button class="action-button bookmark-button {% if post.is_bookmarked %}bookmarked{% endif %}" data-post-id="{{ post.id }}">
+                        <span class="icon">{{ profile.bookmark_emoji }}</span>
+                    </button>
             {% else %}
                 <button class="action-button" disabled>
                     <span class="icon">♥</span>

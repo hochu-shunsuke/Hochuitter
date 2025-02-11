@@ -40,6 +40,29 @@ def index(request):
     return render(request, 'post/index.html', context)
 
 @login_required
+def bookmarks(request):
+    # ユーザーがブックマークした投稿を取得
+    bookmarked_posts = Post.objects.filter(bookmarked_users=request.user)
+    
+    # 各投稿のコメント数とブックマーク状態を計算
+    for post in bookmarked_posts:
+        post.comments_count = Comment.objects.filter(post=post, parent_comment=None).count()
+        post.is_bookmarked = True  # ブックマーク一覧なので、全ての投稿がブックマーク済み
+
+    # ユーザープロフィールの取得
+    profile, _ = Profile.objects.get_or_create(user=request.user)
+
+    context = {
+        'bookmarked_posts': bookmarked_posts,
+        'user_id': request.user.id,
+        'username': request.user.username,
+        'profile': profile,
+        'page_title': 'ブックマーク'
+    }
+
+    return render(request, 'post/bookmarks.html', context)
+
+@login_required
 def create_post(request):
     user = request.user
     profile = Profile.objects.get_or_create(user=user)[0]
