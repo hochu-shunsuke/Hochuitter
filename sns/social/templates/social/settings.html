@@ -7,28 +7,76 @@
     <h1>設定</h1>
     <form method="post" class="settings-form">
         {% csrf_token %}
-        {% for field in form %}
-        <div class="form-group">
-            <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
-            {% if field.name == 'theme' %}
-                <select name="{{ field.name }}" id="{{ field.id_for_label }}" class="theme-select">
-                    {% for value, text in field.field.choices %}
+        
+        <div class="settings-section">
+            <h2 class="settings-section-title">テーマ</h2>
+            <div class="form-group">
+                <label for="{{ form.theme.id_for_label }}" class="form-label">{{ form.theme.label }}</label>
+                <select name="theme" id="{{ form.theme.id_for_label }}" class="theme-select">
+                    {% for value, text in form.theme.field.choices %}
                         <option value="{{ value }}" {% if value == profile.theme %}selected{% endif %}>{{ text }}</option>
                     {% endfor %}
                 </select>
-            {% else %}
-                {{ field }}
-            {% endif %}
-            {% if field.help_text %}
-            <small class="help-text">{{ field.help_text }}</small>
-            {% endif %}
-            {% if field.errors %}
-            <div class="error-message">
-                {{ field.errors.0 }}
+                {% if form.theme.help_text %}
+                <small class="help-text">{{ form.theme.help_text }}</small>
+                {% endif %}
             </div>
-            {% endif %}
         </div>
-        {% endfor %}
+
+        <div class="settings-section">
+            <h2 class="settings-section-title">絵文字設定</h2>
+            <div class="form-group">
+                <label for="{{ form.like_emoji.id_for_label }}" class="form-label">{{ form.like_emoji.label }}</label>
+                <input type="text" name="like_emoji" value="{{ form.like_emoji.value }}" class="emoji-input" maxlength="2" placeholder="❤️">
+                {% if form.like_emoji.help_text %}
+                <small class="help-text">{{ form.like_emoji.help_text }}</small>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.comment_emoji.id_for_label }}" class="form-label">{{ form.comment_emoji.label }}</label>
+                <input type="text" name="comment_emoji" value="{{ form.comment_emoji.value }}" class="emoji-input" maxlength="2" placeholder="💭">
+                {% if form.comment_emoji.help_text %}
+                <small class="help-text">{{ form.comment_emoji.help_text }}</small>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.bookmark_emoji.id_for_label }}" class="form-label">{{ form.bookmark_emoji.label }}</label>
+                <input type="text" name="bookmark_emoji" value="{{ form.bookmark_emoji.value }}" class="emoji-input" maxlength="2" placeholder="🔖">
+                {% if form.bookmark_emoji.help_text %}
+                <small class="help-text">{{ form.bookmark_emoji.help_text }}</small>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <h2 class="settings-section-title">表示設定</h2>
+            <div class="form-group">
+                <label for="{{ form.post_spacing.id_for_label }}" class="form-label">{{ form.post_spacing.label }}</label>
+                <select name="post_spacing" id="{{ form.post_spacing.id_for_label }}" class="spacing-select">
+                    {% for value, text in form.post_spacing.field.choices %}
+                        <option value="{{ value }}" {% if value == profile.post_spacing %}selected{% endif %}>{{ text }}</option>
+                    {% endfor %}
+                </select>
+                {% if form.post_spacing.help_text %}
+                <small class="help-text">{{ form.post_spacing.help_text }}</small>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.content_spacing.id_for_label }}" class="form-label">{{ form.content_spacing.label }}</label>
+                <select name="content_spacing" id="{{ form.content_spacing.id_for_label }}" class="spacing-select">
+                    {% for value, text in form.content_spacing.field.choices %}
+                        <option value="{{ value }}" {% if value == profile.content_spacing %}selected{% endif %}>{{ text }}</option>
+                    {% endfor %}
+                </select>
+                {% if form.content_spacing.help_text %}
+                <small class="help-text">{{ form.content_spacing.help_text }}</small>
+                {% endif %}
+            </div>
+        </div>
+
         <button type="submit" class="submit-button">保存</button>
     </form>
 </div>
@@ -54,8 +102,31 @@
         border: 1px solid var(--border-color);
     }
 
+    .settings-section {
+        margin-bottom: 2rem;
+        padding-bottom: 2rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .settings-section:last-child {
+        margin-bottom: 2rem;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+
+    .settings-section-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        color: var(--text-primary);
+    }
+
     .form-group {
         margin-bottom: 1.5rem;
+    }
+
+    .form-group:last-child {
+        margin-bottom: 0;
     }
 
     .form-label {
@@ -65,7 +136,7 @@
         color: var(--text-primary);
     }
 
-    .emoji-input, .theme-select {
+    .emoji-input, .theme-select, .spacing-select {
         width: 100%;
         padding: 0.75rem;
         border: 1px solid var(--border-color);
@@ -82,24 +153,13 @@
         font-size: 1.5rem;
     }
 
-    .number-input {
-        width: 100%;
-        padding: 0.75rem;
-        border: 1px solid var(--border-color);
-        border-radius: 0.5rem;
-        background-color: var(--bg-main);
-        color: var(--text-primary);
-        font-size: 1rem;
-        transition: border-color var(--transition-base);
-    }
-
     .emoji-input::placeholder {
         color: var(--text-secondary);
         opacity: 0.5;
         font-size: 1rem;
     }
 
-    .emoji-input:focus, .theme-select:focus, .number-input:focus {
+    .emoji-input:focus, .theme-select:focus, .spacing-select:focus {
         outline: none;
         border-color: var(--accent-color);
     }
