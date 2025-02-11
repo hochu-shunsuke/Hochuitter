@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const deltaX = touchMoveX - touchStartX;
 
         // 左サイドバーの処理
-        if (activeSidebar === 'left' && deltaX > 0 && !body.classList.contains('sidebar-left-visible')) {
+        if (activeSidebar === 'left' && deltaX > 0 && !body.classList.contains('sidebar-left-visible') && !body.classList.contains('sidebar-right-visible')) {
             isSwiping = true;
             event.preventDefault();
 
@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function() {
             updateOverlay(translateX / 280);
         }
         // 右サイドバーの処理
-        else if (activeSidebar === 'right' && deltaX < 0 && !body.classList.contains('sidebar-right-visible')) {
+        else if (activeSidebar === 'right' && deltaX < 0 && !body.classList.contains('sidebar-right-visible') && !body.classList.contains('sidebar-left-visible')) {
             isSwiping = true;
             event.preventDefault();
 
@@ -77,6 +77,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // サイドバーを表示
     function showSidebar(side) {
+        // 片方のサイドバーが表示されている場合、もう片方を閉じる
+        if (side === 'left' && body.classList.contains('sidebar-right-visible')) {
+            hideSidebar('right');
+        } else if (side === 'right' && body.classList.contains('sidebar-left-visible')) {
+            hideSidebar('left');
+        }
+
         if (side === 'left') {
             body.classList.add('sidebar-left-visible');
             sidebarLeft.style.transform = '';
