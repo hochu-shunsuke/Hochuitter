@@ -9,7 +9,7 @@
 <div id="parent-post">
     <article class="post">
         <div class="post-header">
-            <a href="{% url 'post:user_posts' user_id=post.user.id %}" class="user-link">
+            <a href="{% url 'social:user_profile' username=post.user.username %}" class="user-link">
                 @{{ post.user }}
             </a>
         </div>
@@ -26,7 +26,7 @@
                         <span class="count like-count" data-post-id="{{ post.id }}">{{ post.like_count }}</span>
                     </button>
                     
-                    <button class="action-button bookmark-button">
+                    <button class="action-button bookmark-button {% if post.is_bookmarked %}bookmarked{% endif %}" data-post-id="{{ post.id }}">
                         <span class="icon">{{ profile.bookmark_emoji }}</span>
                     </button>
                 {% else %}
@@ -72,7 +72,7 @@
     {% for comment in comments %}
     <article class="comment">
         <div class="post-header">
-            <a href="{% url 'post:user_posts' user_id=comment.user.id %}" class="user-link">
+            <a href="{% url 'social:user_profile' username=comment.user.username %}" class="user-link">
                 @{{ comment.user }}
             </a>
         </div>
@@ -322,6 +322,14 @@
         text-align: center;
         color: var(--text-secondary);
     }
+
+    .bookmark-button.bookmarked {
+        color: var(--accent-color);
+    }
+
+    .bookmark-button:hover {
+        color: var(--accent-color);
+    }
 </style>
 
 <script>
@@ -422,6 +430,35 @@
                     
                     // ボタンの状態を更新
                     this.classList.toggle('liked');
+                    
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            });
+        });
+
+        // ブックマークボタンの処理
+        document.querySelectorAll('.bookmark-button').forEach(button => {
+            button.addEventListener('click', async function() {
+                const postId = this.getAttribute('data-post-id');
+                
+                try {
+                    const response = await fetch(`/${postId}/toggle/bookmark/`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}',
+                            'Content-Type': 'application/json',
+                        },
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    
+                    const data = await response.json();
+                    
+                    // ボタンの状態を更新
+                    this.classList.toggle('bookmarked', data.is_bookmarked);
                     
                 } catch (error) {
                     console.error('Error:', error);

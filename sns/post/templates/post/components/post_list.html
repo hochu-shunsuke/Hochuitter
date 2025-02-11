@@ -1,0 +1,233 @@
+{% for post in posts %}
+<article class="post">
+    <div class="post-header">
+        <div class="user-info">
+            <a href="{% url 'social:user_profile' username=post.user.username|default:'' %}" class="user-link">
+                @{{ post.user }}
+            </a>
+        </div>
+    </div>
+    
+    <div class="post-content">
+        {{ post.content }}
+    </div>
+    
+    <div class="post-footer">
+        <div class="post-actions">
+            {% if user_id %}
+                <button class="action-button like-button {% if post.is_liked %}liked{% endif %}" data-post-id="{{ post.id }}">
+                    <span class="icon">{{ profile.like_emoji }}</span>
+                    <span class="count like-count" data-post-id="{{ post.id }}">{{ post.like_count }}</span>
+                </button>
+                
+                <a href="{% url 'post:post_detail' post_id=post.id %}" class="action-button comment-button">
+                    <span class="icon">{{ profile.comment_emoji }}</span>
+                    <span class="count">{{ post.comments_count }}</span>
+                </a>
+                
+                    <button class="action-button bookmark-button {% if post.is_bookmarked %}bookmarked{% endif %}" data-post-id="{{ post.id }}">
+                        <span class="icon">{{ profile.bookmark_emoji }}</span>
+                    </button>
+            {% else %}
+                <button class="action-button" disabled>
+                    <span class="icon">♥</span>
+                    <span class="count">{{ post.like_count }}</span>
+                </button>
+                <button class="action-button" disabled>
+                    <span class="icon">💬</span>
+                    <span class="count">{{ post.comment_count }}</span>
+                </button>
+            {% endif %}
+        </div>
+        <time class="post-date">{{ post.post_date }}</time>
+    </div>
+</article>
+{% empty %}
+<div class="empty-state">
+    <p>投稿がありません</p>
+</div>
+{% endfor %}
+
+<style>
+    .post {
+        background-color: var(--bg-sidebar);
+        border: 1px solid var(--border-color);
+        border-radius: 1rem;
+        padding: var(--post-spacing);
+        margin-bottom: 1rem;
+        transition: all var(--transition-base);
+    }
+
+    .post:hover {
+        background-color: var(--hover-bg);
+    }
+
+    .post-header {
+        margin-bottom: 1rem;
+    }
+
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .user-link {
+        text-decoration: none;
+        color: var(--accent-color);
+        font-weight: 500;
+        font-size: 1rem;
+        transition: color var(--transition-base);
+    }
+
+    .user-link:hover {
+        text-decoration: underline;
+    }
+
+    .post-content {
+        margin: 1rem 0;
+        line-height: 1.6;
+        color: var(--text-primary);
+        word-wrap: break-word;
+        font-size: 1rem;
+    }
+
+    .post-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: var(--post-spacing);
+    }
+
+    .post-actions {
+        display: flex;
+        gap: 1.5rem;
+    }
+
+    .action-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem;
+        background: none;
+        border: none;
+        border-radius: 9999px;
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all var(--transition-base);
+        text-decoration: none;
+    }
+
+    .action-button:hover {
+        color: var(--accent-color);
+        background-color: var(--hover-bg);
+    }
+
+    .like-button:hover {
+        color: #e11d48;
+    }
+
+    .action-button.liked {
+        color: #e11d48;
+    }
+
+    .bookmark-button.bookmarked {
+        color: var(--accent-color);
+    }
+
+    .bookmark-button:hover {
+        color: var(--accent-color);
+    }
+
+    .action-button:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+
+    .action-button .icon {
+        font-size: 1.25rem;
+    }
+
+    .action-button .count {
+        min-width: 1rem;
+    }
+
+    .post-date {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+    }
+
+    .empty-state {
+        padding: var(--post-spacing);
+        text-align: center;
+        color: var(--text-secondary);
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // いいねボタンの処理
+    document.querySelectorAll('.like-button').forEach(button => {
+        button.addEventListener('click', async function() {
+            const postId = this.getAttribute('data-post-id');
+            
+            try {
+                const response = await fetch(`/${postId}/toggle/like/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json',
+                    },
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                
+                const data = await response.json();
+                
+                // いいねカウントの更新
+                const likeCount = document.querySelector(`.like-count[data-post-id="${postId}"]`);
+                if (likeCount) {
+                    likeCount.textContent = data.like_count;
+                }
+                
+                // ボタンの状態を更新
+                this.classList.toggle('liked');
+                
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
+    });
+
+    // ブックマークボタンの処理
+    document.querySelectorAll('.bookmark-button').forEach(button => {
+        button.addEventListener('click', async function() {
+            const postId = this.getAttribute('data-post-id');
+            
+            try {
+                const response = await fetch(`/${postId}/toggle/bookmark/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json',
+                    },
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                
+                const data = await response.json();
+                
+                // ボタンの状態を更新
+                this.classList.toggle('bookmarked', data.is_bookmarked);
+                
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
+    });
+});</script>

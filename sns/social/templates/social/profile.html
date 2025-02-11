@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block body_class %}{% if viewer_profile.theme == 'dark' %}dark-mode{% endif %}{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="profile-header">
+        <h1 class="username">@{{ target_user.username }}</h1>
+        {% if user_id and user_id != target_user.id %}
+            <button class="follow-button {% if is_following %}following{% endif %}" 
+                    data-username="{{ target_user.username }}">
+                <span class="follow-text">{% if is_following %}フォロー中{% else %}フォローする{% endif %}</span>
+            </button>
+        {% endif %}
+    </div>
+
+    <div class="stats-container">
+        <div class="stat-item">
+            <span class="stat-label">フォロワー</span>
+            <span class="stat-value">{{ followers_count }}</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">フォロー中</span>
+            <span class="stat-value">{{ following_count }}</span>
+        </div>
+    </div>
+
+    <div id="user-posts" class="posts-container">
+        {% include 'post/components/post_list.html' with profile=viewer_profile %}
+    </div>
+</div>
+
+<style>
+    .profile-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .profile-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .username {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0;
+    }
+
+    .stats-container {
+        display: flex;
+        gap: 2rem;
+        padding: 1.5rem;
+        background-color: var(--bg-sidebar);
+        border-radius: 1rem;
+        border: 1px solid var(--border-color);
+        margin-bottom: 2rem;
+    }
+
+    .stat-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .stat-label {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-value {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .follow-button {
+        padding: 0.5rem 1.5rem;
+        border-radius: 9999px;
+        border: 1px solid var(--accent-color);
+        background: none;
+        color: var(--accent-color);
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all var(--transition-base);
+    }
+
+    .follow-button:hover {
+        background-color: var(--accent-color);
+        color: white;
+    }
+
+    .follow-button.following {
+        background-color: var(--accent-color);
+        color: white;
+    }
+
+    .follow-button.following:hover {
+        background-color: #dc2626;
+        border-color: #dc2626;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // フォローボタンの処理
+        document.querySelectorAll('.follow-button').forEach(button => {
+            button.addEventListener('click', async function() {
+                const username = this.getAttribute('data-username');
+                
+                try {
+                    const response = await fetch(`/social/follow/${username}/`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}',
+                            'Content-Type': 'application/json',
+                        },
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    
+                    const data = await response.json();
+                    
+                    // ボタンの状態を更新
+                    this.classList.toggle('following', data.status === 'followed');
+                    const followText = this.querySelector('.follow-text');
+                    if (followText) {
+                        followText.textContent = data.status === 'followed' ? 'フォロー中' : 'フォローする';
+                    }
+
+                    // フォロワー数を更新（ページをリロード）
+                    window.location.reload();
+                    
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

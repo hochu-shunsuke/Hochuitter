@@ -5,38 +5,35 @@ class ProfileSettingsForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ['like_emoji', 'comment_emoji', 'bookmark_emoji', 'theme']
-        widgets = {
-            'like_emoji': forms.TextInput(attrs={
-                'maxlength': 1,
-                'class': 'emoji-input',
-                'placeholder': '絵文字を入力',
-                'style': 'height: 3rem;'
-            }),
-            'comment_emoji': forms.TextInput(attrs={
-                'maxlength': 1,
-                'class': 'emoji-input',
-                'placeholder': '絵文字を入力',
-                'style': 'height: 3rem;'
-            }),
-            'bookmark_emoji': forms.TextInput(attrs={
-                'maxlength': 1,
-                'class': 'emoji-input',
-                'placeholder': '絵文字を入力',
-                'style': 'height: 3rem;'
-            }),
-            'theme': forms.Select(attrs={
-                'class': 'theme-select',
-                'style': 'height: 3rem;'
-            })
-        }
         labels = {
             'like_emoji': 'いいねの絵文字',
             'comment_emoji': 'コメントの絵文字',
             'bookmark_emoji': 'ブックマークの絵文字',
             'theme': 'テーマ'
         }
+        widgets = {
+            'like_emoji': forms.TextInput(attrs={
+                'class': 'emoji-input',
+                'maxlength': '2',
+                'placeholder': '❤️'
+            }),
+            'comment_emoji': forms.TextInput(attrs={
+                'class': 'emoji-input',
+                'maxlength': '2',
+                'placeholder': '💭'
+            }),
+            'bookmark_emoji': forms.TextInput(attrs={
+                'class': 'emoji-input',
+                'maxlength': '2',
+                'placeholder': '🔖'
+            }),
+            'theme': forms.Select(attrs={
+                'class': 'theme-select'
+            })
+        }
         help_texts = {
-            'like_emoji': '1文字の絵文字を入力してください',
-            'comment_emoji': '1文字の絵文字を入力してください',
-            'bookmark_emoji': '1文字の絵文字を入力してください'
+            'like_emoji': '投稿へのいいねボタンに使用される絵文字',
+            'comment_emoji': 'コメントボタンに使用される絵文字',
+            'bookmark_emoji': 'ブックマークボタンに使用される絵文字',
+            'theme': 'サイト全体の配色テーマ'
         }

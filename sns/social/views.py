@@ -5,6 +5,42 @@ from django.contrib.auth.models import User
 from .models import Follow, Profile
 from .forms import ProfileSettingsForm
 
+def user_profile(request, username):
+    target_user = get_object_or_404(User, username=username)
+    profile, created = Profile.objects.get_or_create(user=target_user)
+    
+    # フォロワー数とフォロー数を取得
+    followers_count = Follow.objects.filter(followed=target_user).count()
+    following_count = Follow.objects.filter(follower=target_user).count()
+    
+    # ログインユーザーがこのユーザーをフォローしているかチェック
+    is_following = False
+    if request.user.is_authenticated:
+        is_following = Follow.objects.filter(
+            follower=request.user,
+            followed=target_user
+        ).exists()
+    
+    # ユーザーの投稿を取得
+    posts = target_user.posts.all()[:50]
+    for post in posts:
+        if request.user.is_authenticated:
+            post.is_bookmarked = post.bookmarked_users.filter(id=request.user.id).exists()
+        else:
+            post.is_bookmarked = False
+    
+    return render(request, 'social/profile.html', {
+        'target_user': target_user,
+        'profile': profile,
+        'followers_count': followers_count,
+        'following_count': following_count,
+        'is_following': is_following,
+        'user_id': request.user.id if request.user.is_authenticated else None,
+        'posts': posts,
+        'username': request.user.username if request.user.is_authenticated else None,
+        'viewer_profile': Profile.objects.get_or_create(user=request.user)[0] if request.user.is_authenticated else None
+    })
+
 @login_required
 def settings(request):
     profile, created = Profile.objects.get_or_create(user=request.user)

@@ -7,33 +7,22 @@ from social.models import Follow, Profile
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 
-def index(request, user_id=None):
+def index(request):
     # ログインユーザーの情報を取得
     current_user = request.user
     current_user_id = current_user.id if current_user.is_authenticated else None
     
-    if user_id:
-        # ユーザーページの場合は特定ユーザーの投稿のみ表示
-        target_user = get_object_or_404(User, pk=user_id)
-        posts = Post.objects.filter(user=target_user)[:50]
-        page_title = f"{target_user.username}のページ"
-    else:
-        # 通常のインデックスページの場合は全投稿を表示
-        posts = Post.objects.all()[:50]
-        page_title = "投稿一覧"
+    # 通常のインデックスページの場合は全投稿を表示
+    posts = Post.objects.all()[:50]
+    page_title = "投稿一覧"
 
-    # 各投稿のコメント数とフォロー状態を計算
+    # 各投稿のコメント数とブックマーク状態を計算
     for post in posts:
         post.comments_count = Comment.objects.filter(post=post, parent_comment=None).count()
-        if current_user.is_authenticated and current_user.id != post.user.id:
-            post.user.is_followed = Follow.objects.filter(
-                follower=current_user,
-                followed=post.user
-            ).exists()
+        if current_user.is_authenticated:
+            post.is_bookmarked = post.bookmarked_users.filter(id=current_user.id).exists()
         else:
-            post.user.is_followed = False
-
-    comment_form = CommentForm()
+            post.is_bookmarked = False
 
     # ユーザープロフィールの取得
     profile = None
@@ -42,26 +31,36 @@ def index(request, user_id=None):
 
     context = {
         'username': current_user.username if current_user.is_authenticated else None,
-        'parent_posts': posts,
+        'posts': posts,
         'user_id': current_user_id,
         'page_title': page_title,
-        'comment_form': comment_form,
-        'is_user_page': bool(user_id),
         'profile': profile
     }
 
-    # ユーザーページの場合はフォロー状態を追加
-    if user_id and current_user.is_authenticated and current_user.id != user_id:
-        context['target_user'] = target_user
-        context['is_following'] = Follow.objects.filter(
-            follower=current_user,
-            followed=target_user
-        ).exists()
-        # フォロワー数とフォロー数を追加
-        context['followers_count'] = Follow.objects.filter(followed=target_user).count()
-        context['following_count'] = Follow.objects.filter(follower=target_user).count()
-
     return render(request, 'post/index.html', context)
+
+@login_required
+def bookmarks(request):
+    # ユーザーがブックマークした投稿を取得
+    bookmarked_posts = Post.objects.filter(bookmarked_users=request.user)
+    
+    # 各投稿のコメント数とブックマーク状態を計算
+    for post in bookmarked_posts:
+        post.comments_count = Comment.objects.filter(post=post, parent_comment=None).count()
+        post.is_bookmarked = True  # ブックマーク一覧なので、全ての投稿がブックマーク済み
+
+    # ユーザープロフィールの取得
+    profile, _ = Profile.objects.get_or_create(user=request.user)
+
+    context = {
+        'bookmarked_posts': bookmarked_posts,
+        'user_id': request.user.id,
+        'username': request.user.username,
+        'profile': profile,
+        'page_title': 'ブックマーク'
+    }
+
+    return render(request, 'post/bookmarks.html', context)
 
 @login_required
 def create_post(request):
@@ -82,6 +81,7 @@ def create_post(request):
         'form': form,
         'user': user,
         'user_id': user.id,
+        'username': user.username,
         'profile': profile
     })
 
@@ -91,11 +91,13 @@ def toggle_like(request, post_id):
     if request.user in post.liked_users.all():
         post.liked_users.remove(request.user)
         post.like_count -= 1
+        is_liked = False
     else:
         post.liked_users.add(request.user)
         post.like_count += 1
+        is_liked = True
     post.save()
-    return JsonResponse({'like_count': post.like_count})
+    return JsonResponse({'like_count': post.like_count, 'is_liked': is_liked})
 
 @login_required
 def toggle_comment_like(request, comment_id):
@@ -109,6 +111,18 @@ def toggle_comment_like(request, comment_id):
     comment.save()
     return JsonResponse({'like_count': comment.like_count})
 
+@login_required
+def toggle_bookmark(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    if request.user in post.bookmarked_users.all():
+        post.bookmarked_users.remove(request.user)
+        is_bookmarked = False
+    else:
+        post.bookmarked_users.add(request.user)
+        is_bookmarked = True
+    post.save()
+    return JsonResponse({'is_bookmarked': is_bookmarked})
+
 def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     comments = Comment.objects.filter(post=post, parent_comment=None)
@@ -117,6 +131,9 @@ def post_detail(request, post_id):
     
     if request.user.is_authenticated:
         profile, _ = Profile.objects.get_or_create(user=request.user)
+        post.is_bookmarked = post.bookmarked_users.filter(id=request.user.id).exists()
+    else:
+        post.is_bookmarked = False
 
     if request.method == 'POST' and request.user.is_authenticated:
         form = CommentForm(request.POST)
