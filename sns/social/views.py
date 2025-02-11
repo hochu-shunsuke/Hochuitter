@@ -4,6 +4,7 @@ from django.http import JsonResponse
 from django.contrib.auth.models import User
 from .models import Follow, Profile
 from .forms import ProfileSettingsForm
+from post.models import Comment, Post
 
 def user_profile(request, username):
     target_user = get_object_or_404(User, username=username)
@@ -24,6 +25,7 @@ def user_profile(request, username):
     # ユーザーの投稿を取得
     posts = target_user.posts.all()[:50]
     for post in posts:
+        post.comments_count = Comment.objects.filter(post=post, parent_comment=None).count()
         if request.user.is_authenticated:
             post.is_bookmarked = post.bookmarked_users.filter(id=request.user.id).exists()
         else:
