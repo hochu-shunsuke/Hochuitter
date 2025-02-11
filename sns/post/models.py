@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.text import slugify
+from datetime import datetime
 
 class Thread(models.Model):
     title = models.CharField(max_length=100)
@@ -14,7 +15,9 @@ class Thread(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.title)
+            #タイトルのに日付を追加したスラグを生成
+            timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+            self.slug = slugify(f"{self.title}-{timestamp}")
         super().save(*args, **kwargs)
 
     def __str__(self):
