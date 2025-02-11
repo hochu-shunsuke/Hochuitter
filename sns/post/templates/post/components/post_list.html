@@ -1,6 +1,6 @@
 <div class="posts-container">
 {% for post in posts %}
-<article class="post" style="padding: {{ profile.post_vertical_padding }}rem 1rem;">
+<article class="post {% if profile.post_spacing == 'compact' %}spacing-compact{% elif profile.post_spacing == 'comfortable' %}spacing-comfortable{% else %}spacing-normal{% endif %}">
     <div class="post-header">
         <div class="user-info">
             <a href="{% url 'social:user_profile' username=post.user.username|default:'' %}" class="user-link">
@@ -9,7 +9,7 @@
         </div>
     </div>
     
-    <div class="post-content" style="line-height: {{ profile.post_content_line_height }};">
+    <div class="post-content {% if profile.content_spacing == 'compact' %}content-compact{% elif profile.content_spacing == 'comfortable' %}content-comfortable{% else %}content-normal{% endif %}">
         {{ post.content }}
     </div>
     
@@ -26,10 +26,10 @@
                     <span class="count">{{ post.comments_count }}</span>
                 </a>
                 
-                    <button class="action-button bookmark-button {% if post.is_bookmarked %}bookmarked{% endif %}" data-post-id="{{ post.id }}">
-                        <span class="icon">{{ profile.bookmark_emoji }}</span>
-                        <span class="count bookmark-count" data-post-id="{{ post.id }}">{{ post.bookmark_count }}</span>
-                    </button>
+                <button class="action-button bookmark-button {% if post.is_bookmarked %}bookmarked{% endif %}" data-post-id="{{ post.id }}">
+                    <span class="icon">{{ profile.bookmark_emoji }}</span>
+                    <span class="count bookmark-count" data-post-id="{{ post.id }}">{{ post.bookmark_count }}</span>
+                </button>
             {% else %}
                 <button class="action-button" disabled>
                     <span class="icon">♥</span>
@@ -52,10 +52,29 @@
 </div>
 
 <style>
+    .posts-container {
+        background-color: var(--bg-sidebar);
+        border: 1px solid var(--border-color);
+        border-radius: 1rem;
+        overflow: hidden;
+    }
+
     .post {
         background-color: var(--bg-sidebar);
         border-bottom: 1px solid var(--border-color);
         transition: all var(--transition-base);
+    }
+
+    .post.spacing-compact {
+        padding: 0.5rem 1rem;
+    }
+
+    .post.spacing-normal {
+        padding: 0.75rem 1rem;
+    }
+
+    .post.spacing-comfortable {
+        padding: 1rem 1rem;
     }
 
     .post:hover {
@@ -71,13 +90,6 @@
         border-bottom-left-radius: 1rem;
         border-bottom-right-radius: 1rem;
         border-bottom: none;
-    }
-
-    .posts-container {
-        background-color: var(--bg-sidebar);
-        border: 1px solid var(--border-color);
-        border-radius: 1rem;
-        overflow: hidden;
     }
 
     .post-header {
@@ -107,6 +119,18 @@
         color: var(--text-primary);
         word-wrap: break-word;
         font-size: 1rem;
+    }
+
+    .post-content.content-compact {
+        line-height: 1.2;
+    }
+
+    .post-content.content-normal {
+        line-height: 1.4;
+    }
+
+    .post-content.content-comfortable {
+        line-height: 1.8;
     }
 
     .post-footer {

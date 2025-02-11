@@ -1,7 +1,7 @@
 <div class="thread-posts-container">
     <div class="thread-posts">
         {% for post in thread_posts %}
-        <div class="thread-post" style="padding: {{ profile.post_vertical_padding }}rem 0;">
+        <div class="thread-post {% if profile.post_spacing == 'compact' %}spacing-compact{% elif profile.post_spacing == 'comfortable' %}spacing-comfortable{% else %}spacing-normal{% endif %}">
             <div class="thread-post-header">
                 <div class="thread-post-meta">
                     <span class="thread-post-number">#{{ post.order }}</span>
@@ -9,7 +9,7 @@
                     <span class="thread-post-date">{{ post.post_date|date:"Y/m/d H:i" }}</span>
                 </div>
             </div>
-            <div class="thread-post-text" style="line-height: {{ profile.post_content_line_height }};">
+            <div class="thread-post-text {% if profile.content_spacing == 'compact' %}content-compact{% elif profile.content_spacing == 'comfortable' %}content-comfortable{% else %}content-normal{% endif %}">
                 {{ post.content }}
             </div>
         </div>
@@ -37,6 +37,18 @@
 
     .thread-post {
         border-bottom: 1px solid var(--border-color);
+    }
+
+    .thread-post.spacing-compact {
+        padding: 0.5rem 0;
+    }
+
+    .thread-post.spacing-normal {
+        padding: 0.75rem 0;
+    }
+
+    .thread-post.spacing-comfortable {
+        padding: 1rem 0;
     }
 
     .thread-post:last-child {
@@ -70,6 +82,18 @@
     .thread-post-text {
         white-space: pre-wrap;
         word-break: break-word;
+    }
+
+    .thread-post-text.content-compact {
+        line-height: 1.2;
+    }
+
+    .thread-post-text.content-normal {
+        line-height: 1.4;
+    }
+
+    .thread-post-text.content-comfortable {
+        line-height: 1.8;
     }
 
     .thread-posts-empty {
