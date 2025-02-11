@@ -258,7 +258,7 @@ body {
     }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1080px) {
     :root {
         --sidebar-width: 280px;
         --main-width: 100%;
