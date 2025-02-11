@@ -116,12 +116,17 @@ def toggle_bookmark(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     if request.user in post.bookmarked_users.all():
         post.bookmarked_users.remove(request.user)
+        post.bookmark_count = post.bookmarked_users.count()
         is_bookmarked = False
     else:
         post.bookmarked_users.add(request.user)
+        post.bookmark_count = post.bookmarked_users.count()
         is_bookmarked = True
     post.save()
-    return JsonResponse({'is_bookmarked': is_bookmarked})
+    return JsonResponse({
+        'is_bookmarked': is_bookmarked,
+        'bookmark_count': post.bookmark_count
+    })
 
 def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)

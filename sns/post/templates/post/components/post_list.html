@@ -1,3 +1,4 @@
+<div class="posts-container">
 {% for post in posts %}
 <article class="post">
     <div class="post-header">
@@ -27,6 +28,7 @@
                 
                     <button class="action-button bookmark-button {% if post.is_bookmarked %}bookmarked{% endif %}" data-post-id="{{ post.id }}">
                         <span class="icon">{{ profile.bookmark_emoji }}</span>
+                        <span class="count bookmark-count" data-post-id="{{ post.id }}">{{ post.bookmark_count }}</span>
                     </button>
             {% else %}
                 <button class="action-button" disabled>
@@ -47,19 +49,36 @@
     <p>投稿がありません</p>
 </div>
 {% endfor %}
+</div>
 
 <style>
     .post {
         background-color: var(--bg-sidebar);
-        border: 1px solid var(--border-color);
-        border-radius: 1rem;
+        border-bottom: 1px solid var(--border-color);
         padding: var(--post-spacing);
-        margin-bottom: 1rem;
         transition: all var(--transition-base);
     }
 
     .post:hover {
         background-color: var(--hover-bg);
+    }
+
+    .post:first-child {
+        border-top-left-radius: 1rem;
+        border-top-right-radius: 1rem;
+    }
+
+    .post:last-child {
+        border-bottom-left-radius: 1rem;
+        border-bottom-right-radius: 1rem;
+        border-bottom: none;
+    }
+
+    .posts-container {
+        background-color: var(--bg-sidebar);
+        border: 1px solid var(--border-color);
+        border-radius: 1rem;
+        overflow: hidden;
     }
 
     .post-header {
@@ -222,8 +241,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 const data = await response.json();
                 
-                // ボタンの状態を更新
+                // ボタンの状態とブックマーク数を更新
                 this.classList.toggle('bookmarked', data.is_bookmarked);
+                const bookmarkCount = document.querySelector(`.bookmark-count[data-post-id="${postId}"]`);
+                if (bookmarkCount) {
+                    bookmarkCount.textContent = data.bookmark_count;
+                }
                 
             } catch (error) {
                 console.error('Error:', error);
