@@ -125,6 +125,18 @@ body {
     padding: var(--content-padding);
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    position: relative;
+}
+
+/* コピーライト */
+.copyright {
+    margin-top: auto;
+    padding: 1rem 0 0.5rem;
+    border-top: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    font-size: 0.7rem;
+    text-align: center;
+    opacity: 0.8;
 }
 
 .sidebar-content h1 {
