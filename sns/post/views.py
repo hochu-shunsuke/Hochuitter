@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Post, Comment
+from .models import Post, Comment, Thread
 from django.urls import reverse_lazy, reverse
 from .form import PostForm, CommentForm
 from django.contrib.auth.models import User
@@ -38,6 +38,78 @@ def index(request):
     }
 
     return render(request, 'post/index.html', context)
+
+@login_required
+def threads(request):
+    # スレッド一覧を取得
+    all_threads = Thread.objects.all()
+    
+    # ユーザープロフィールの取得
+    profile = Profile.objects.get_or_create(user=request.user)[0]
+
+    context = {
+        'threads': all_threads,
+        'user_id': request.user.id,
+        'username': request.user.username,
+        'profile': profile,
+        'page_title': 'スレッド一覧'
+    }
+
+    return render(request, 'post/threads.html', context)
+
+@login_required
+def create_thread(request):
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        if title:
+            thread = Thread.objects.create(
+                title=title,
+                user=request.user
+            )
+            return redirect('post:thread_detail', thread_id=thread.id)
+    
+    profile = Profile.objects.get_or_create(user=request.user)[0]
+    
+    return render(request, 'post/create_thread.html', {
+        'user_id': request.user.id,
+        'username': request.user.username,
+        'profile': profile,
+        'page_title': 'スレッド作成'
+    })
+
+@login_required
+def thread_detail(request, thread_id):
+    thread = get_object_or_404(Thread, id=thread_id)
+    posts = Post.objects.filter(thread=thread)[:500]
+    profile = Profile.objects.get_or_create(user=request.user)[0]
+
+    if request.method == 'POST':
+        form = PostForm(request.POST)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.user = request.user
+            post.thread = thread
+            post.save()
+            return redirect('post:thread_detail', thread_id=thread.id)
+    else:
+        form = PostForm()
+
+    # 投稿のいいねとブックマーク状態を設定
+    for post in posts:
+        post.comments_count = Comment.objects.filter(post=post, parent_comment=None).count()
+        post.is_bookmarked = post.bookmarked_users.filter(id=request.user.id).exists()
+
+    context = {
+        'thread': thread,
+        'posts': posts,
+        'form': form,
+        'user_id': request.user.id,
+        'username': request.user.username,
+        'profile': profile,
+        'page_title': thread.title
+    }
+
+    return render(request, 'post/thread_detail.html', context)
 
 @login_required
 def bookmarks(request):
