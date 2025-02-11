@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}新規スレッド作成 | {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h1>新規スレッド作成</h1>
+    <form method="post" class="thread-form">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="title">スレッドタイトル</label>
+            <input type="text" 
+                   id="title" 
+                   name="title" 
+                   class="form-input" 
+                   maxlength="100" 
+                   required 
+                   placeholder="スレッドのタイトルを入力してください">
+        </div>
+        <button type="submit" class="form-button">作成する</button>
+    </form>
+</div>
+
+<style>
+    .form-container h1 {
+        margin: 0 0 1.5rem 0;
+        font-size: 1.5rem;
+        font-weight: 700;
+        text-align: center;
+    }
+
+    .thread-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: var(--text-primary);
+        font-weight: 500;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid var(--border-color);
+        border-radius: 0.5rem;
+        background-color: var(--bg-main);
+        color: var(--text-primary);
+        font-size: 1rem;
+        transition: border-color var(--transition-base);
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: var(--accent-color);
+    }
+
+    .form-button {
+        margin-top: 1rem;
+    }
+</style>
+{% endblock %}

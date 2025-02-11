@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block title %}スレッド一覧 | {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="thread-header">
+    <h1>スレッド一覧</h1>
+    <a href="{% url 'post:create_thread' %}" class="create-thread-button">
+        <button class="form-button">新規スレッド作成</button>
+    </a>
+</div>
+
+<div class="threads-container">
+    {% for thread in threads %}
+    <article class="thread">
+        <a href="{% url 'post:thread_detail' thread_id=thread.id %}" class="thread-link">
+            <div class="thread-title">
+                <h2>{{ thread.title }}</h2>
+            </div>
+            <div class="thread-info">
+                <span class="thread-author">作成者: @{{ thread.user.username }}</span>
+                <span class="thread-date">{{ thread.created_at|date:"Y/m/d H:i" }}</span>
+            </div>
+        </a>
+    </article>
+    {% empty %}
+    <div class="empty-state">
+        <p>スレッドがありません</p>
+    </div>
+    {% endfor %}
+</div>
+
+<style>
+    .thread-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .thread-header h1 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+
+    .create-thread-button {
+        text-decoration: none;
+    }
+
+    .create-thread-button .form-button {
+        margin: 0;
+        padding: 0.5rem 1rem;
+    }
+
+    .threads-container {
+        background-color: var(--bg-sidebar);
+        border: 1px solid var(--border-color);
+        border-radius: 1rem;
+        overflow: hidden;
+    }
+
+    .thread {
+        border-bottom: 1px solid var(--border-color);
+        transition: all var(--transition-base);
+    }
+
+    .thread:last-child {
+        border-bottom: none;
+    }
+
+    .thread:hover {
+        background-color: var(--hover-bg);
+    }
+
+    .thread-link {
+        display: block;
+        padding: var(--post-spacing);
+        text-decoration: none;
+        color: var(--text-primary);
+    }
+
+    .thread-title h2 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1.25rem;
+        font-weight: 600;
+    }
+
+    .thread-info {
+        display: flex;
+        justify-content: space-between;
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+    }
+
+    .thread-author {
+        color: var(--accent-color);
+    }
+
+    .empty-state {
+        padding: var(--post-spacing);
+        text-align: center;
+        color: var(--text-secondary);
+    }
+</style>
+{% endblock %}

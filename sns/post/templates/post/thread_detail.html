@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ thread.title }} | {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="thread-detail">
+    <div class="thread-header">
+        <h1>{{ thread.title }}</h1>
+        <div class="thread-meta">
+            <span class="thread-author">作成者: @{{ thread.user.username }}</span>
+            <span class="thread-date">{{ thread.created_at|date:"Y/m/d H:i" }}</span>
+        </div>
+    </div>
+
+    <div class="post-form-container">
+        <form method="post" class="post-form">
+            {% csrf_token %}
+            <div class="form-group">
+                <textarea name="content" 
+                          class="form-input" 
+                          rows="3" 
+                          maxlength="280" 
+                          required 
+                          placeholder="投稿を入力してください"></textarea>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="form-button">投稿する</button>
+            </div>
+        </form>
+    </div>
+
+    {% include 'post/components/thread_posts_list.html' with thread_posts=thread_posts %}
+</div>
+
+<style>
+    .thread-detail {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .thread-header {
+        padding: 1.5rem;
+        background-color: var(--bg-sidebar);
+        border: 1px solid var(--border-color);
+        border-radius: 1rem;
+    }
+
+    .thread-header h1 {
+        margin: 0 0 1rem 0;
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+
+    .thread-meta {
+        display: flex;
+        justify-content: space-between;
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+    }
+
+    .thread-author {
+        color: var(--accent-color);
+    }
+
+    .post-form-container {
+        background-color: var(--bg-sidebar);
+        border: 1px solid var(--border-color);
+        border-radius: 1rem;
+        padding: 1.5rem;
+    }
+
+    .post-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .form-actions .form-button {
+        width: auto;
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
+</style>
+{% endblock %}

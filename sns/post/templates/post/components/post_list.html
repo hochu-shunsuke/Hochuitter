@@ -1,6 +1,6 @@
 <div class="posts-container">
 {% for post in posts %}
-<article class="post">
+<article class="post {% if profile.post_spacing == 'compact' %}spacing-compact{% elif profile.post_spacing == 'comfortable' %}spacing-comfortable{% else %}spacing-normal{% endif %}">
     <div class="post-header">
         <div class="user-info">
             <a href="{% url 'social:user_profile' username=post.user.username|default:'' %}" class="user-link">
@@ -9,7 +9,7 @@
         </div>
     </div>
     
-    <div class="post-content">
+    <div class="post-content {% if profile.content_spacing == 'compact' %}content-compact{% elif profile.content_spacing == 'comfortable' %}content-comfortable{% else %}content-normal{% endif %}">
         {{ post.content }}
     </div>
     
@@ -26,10 +26,10 @@
                     <span class="count">{{ post.comments_count }}</span>
                 </a>
                 
-                    <button class="action-button bookmark-button {% if post.is_bookmarked %}bookmarked{% endif %}" data-post-id="{{ post.id }}">
-                        <span class="icon">{{ profile.bookmark_emoji }}</span>
-                        <span class="count bookmark-count" data-post-id="{{ post.id }}">{{ post.bookmark_count }}</span>
-                    </button>
+                <button class="action-button bookmark-button {% if post.is_bookmarked %}bookmarked{% endif %}" data-post-id="{{ post.id }}">
+                    <span class="icon">{{ profile.bookmark_emoji }}</span>
+                    <span class="count bookmark-count" data-post-id="{{ post.id }}">{{ post.bookmark_count }}</span>
+                </button>
             {% else %}
                 <button class="action-button" disabled>
                     <span class="icon">♥</span>
@@ -52,11 +52,29 @@
 </div>
 
 <style>
+    .posts-container {
+        background-color: var(--bg-sidebar);
+        border: 1px solid var(--border-color);
+        border-radius: 1rem;
+        overflow: hidden;
+    }
+
     .post {
         background-color: var(--bg-sidebar);
         border-bottom: 1px solid var(--border-color);
-        padding: var(--post-spacing);
         transition: all var(--transition-base);
+    }
+
+    .post.spacing-compact {
+        padding: 0.5rem 1rem;
+    }
+
+    .post.spacing-normal {
+        padding: 0.75rem 1rem;
+    }
+
+    .post.spacing-comfortable {
+        padding: 1rem 1rem;
     }
 
     .post:hover {
@@ -74,28 +92,21 @@
         border-bottom: none;
     }
 
-    .posts-container {
-        background-color: var(--bg-sidebar);
-        border: 1px solid var(--border-color);
-        border-radius: 1rem;
-        overflow: hidden;
-    }
-
     .post-header {
-        margin-bottom: 1rem;
+        margin-bottom: 0.5rem;
     }
 
     .user-info {
         display: flex;
         align-items: center;
-        gap: 1rem;
+        gap: 0.75rem;
     }
 
     .user-link {
         text-decoration: none;
         color: var(--accent-color);
         font-weight: 500;
-        font-size: 1rem;
+        font-size: 0.875rem;
         transition: color var(--transition-base);
     }
 
@@ -104,18 +115,29 @@
     }
 
     .post-content {
-        margin: 1rem 0;
-        line-height: 1.6;
+        margin: 0.5rem 0;
         color: var(--text-primary);
         word-wrap: break-word;
         font-size: 1rem;
+    }
+
+    .post-content.content-compact {
+        line-height: 1.2;
+    }
+
+    .post-content.content-normal {
+        line-height: 1.4;
+    }
+
+    .post-content.content-comfortable {
+        line-height: 1.8;
     }
 
     .post-footer {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-top: var(--post-spacing);
+        margin-top: 0.5rem;
     }
 
     .post-actions {
@@ -178,7 +200,7 @@
     }
 
     .empty-state {
-        padding: var(--post-spacing);
+        padding: 1rem;
         text-align: center;
         color: var(--text-secondary);
     }
@@ -253,4 +275,5 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-});</script>
+});
+</script>

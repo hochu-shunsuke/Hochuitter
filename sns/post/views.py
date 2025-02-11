@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Post, Comment
+from .models import Post, Comment, Thread, ThreadPost
 from django.urls import reverse_lazy, reverse
 from .form import PostForm, CommentForm
 from django.contrib.auth.models import User
 from social.models import Follow, Profile
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.db.models import Max
 
 def index(request):
     # ログインユーザーの情報を取得
@@ -38,6 +39,77 @@ def index(request):
     }
 
     return render(request, 'post/index.html', context)
+
+@login_required
+def threads(request):
+    # スレッド一覧を取得
+    all_threads = Thread.objects.all()
+    
+    # ユーザープロフィールの取得
+    profile = Profile.objects.get_or_create(user=request.user)[0]
+
+    context = {
+        'threads': all_threads,
+        'user_id': request.user.id,
+        'username': request.user.username,
+        'profile': profile,
+        'page_title': 'スレッド一覧'
+    }
+
+    return render(request, 'post/threads.html', context)
+
+@login_required
+def create_thread(request):
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        if title:
+            thread = Thread.objects.create(
+                title=title,
+                user=request.user
+            )
+            return redirect('post:thread_detail', thread_id=thread.id)
+    
+    profile = Profile.objects.get_or_create(user=request.user)[0]
+    
+    return render(request, 'post/create_thread.html', {
+        'user_id': request.user.id,
+        'username': request.user.username,
+        'profile': profile,
+        'page_title': 'スレッド作成'
+    })
+
+@login_required
+def thread_detail(request, thread_id):
+    thread = get_object_or_404(Thread, id=thread_id)
+    thread_posts = ThreadPost.objects.filter(thread=thread).order_by('order')
+    profile = Profile.objects.get_or_create(user=request.user)[0]
+
+    if request.method == 'POST':
+        content = request.POST.get('content')
+        if content:
+            # 現在の最大orderを取得し、新しい投稿の順序を設定
+            max_order = thread_posts.aggregate(Max('order'))['order__max']
+            new_order = 1 if max_order is None else max_order + 1
+            
+            # 新しい投稿を作成
+            ThreadPost.objects.create(
+                content=content,
+                user=request.user,
+                thread=thread,
+                order=new_order
+            )
+            return redirect('post:thread_detail', thread_id=thread.id)
+
+    context = {
+        'thread': thread,
+        'thread_posts': thread_posts,
+        'user_id': request.user.id,
+        'username': request.user.username,
+        'profile': profile,
+        'page_title': thread.title
+    }
+
+    return render(request, 'post/thread_detail.html', context)
 
 @login_required
 def bookmarks(request):

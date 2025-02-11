@@ -1,0 +1,111 @@
+<div class="thread-posts-container">
+    <div class="thread-posts">
+        {% for post in thread_posts %}
+        <div class="thread-post {% if profile.post_spacing == 'compact' %}spacing-compact{% elif profile.post_spacing == 'comfortable' %}spacing-comfortable{% else %}spacing-normal{% endif %}">
+            <div class="thread-post-header">
+                <div class="thread-post-meta">
+                    <span class="thread-post-number">#{{ post.order }}</span>
+                    <span class="thread-post-author">@{{ post.user.username }}</span>
+                    <span class="thread-post-date">{{ post.post_date|date:"Y/m/d H:i" }}</span>
+                </div>
+            </div>
+            <div class="thread-post-text {% if profile.content_spacing == 'compact' %}content-compact{% elif profile.content_spacing == 'comfortable' %}content-comfortable{% else %}content-normal{% endif %}">
+                {{ post.content }}
+            </div>
+        </div>
+        {% empty %}
+        <div class="thread-posts-empty">
+            まだ投稿がありません。最初の投稿を作成してください。
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    .thread-posts-container {
+        background-color: var(--bg-sidebar);
+        border: 1px solid var(--border-color);
+        border-radius: 1rem;
+        overflow: hidden;
+    }
+
+    .thread-posts {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .thread-post {
+        background-color: var(--bg-sidebar);
+        border-bottom: 1px solid var(--border-color);
+        transition: all var(--transition-base);
+    }
+
+    .thread-post.spacing-compact {
+        padding: 0.5rem 1rem;
+    }
+
+    .thread-post.spacing-normal {
+        padding: 0.75rem 1rem;
+    }
+
+    .thread-post.spacing-comfortable {
+        padding: 1rem 1rem;
+    }
+
+    .thread-post:last-child {
+        border-bottom: none;
+    }
+
+    .thread-post:hover {
+        background-color: var(--hover-bg);
+    }
+
+    .thread-post-header {
+        margin-bottom: 0.5rem;
+    }
+
+    .thread-post-meta {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+        font-size: 0.875rem;
+    }
+
+    .thread-post-number {
+        font-weight: bold;
+        color: var(--accent-color);
+    }
+
+    .thread-post-author {
+        color: var(--accent-color);
+    }
+
+    .thread-post-date {
+        color: var(--text-secondary);
+    }
+
+    .thread-post-text {
+        margin: 0.5rem 0;
+        color: var(--text-primary);
+        word-wrap: break-word;
+        font-size: 1rem;
+    }
+
+    .thread-post-text.content-compact {
+        line-height: 1.2;
+    }
+
+    .thread-post-text.content-normal {
+        line-height: 1.4;
+    }
+
+    .thread-post-text.content-comfortable {
+        line-height: 1.8;
+    }
+
+    .thread-posts-empty {
+        text-align: center;
+        color: var(--text-secondary);
+        padding: 1rem;
+    }
+</style>

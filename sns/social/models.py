@@ -18,6 +18,14 @@ class Profile(models.Model):
     bookmark_emoji = models.CharField(max_length=10, default='🔖')
     theme = models.CharField(max_length=5, choices=THEME_CHOICES, default='light')
     
+    # 投稿の表示設定
+    SPACING_CHOICES = [
+        ('compact', 'コンパクト'),
+        ('normal', '普通'),
+        ('comfortable', '広め'),
+    ]
+    post_spacing = models.CharField(max_length=15, choices=SPACING_CHOICES, default='normal')
+    content_spacing = models.CharField(max_length=15, choices=SPACING_CHOICES, default='normal')
     
     def __str__(self):
         return self.user.username #Userのusernameを参照している．Profile.userの定義部分でUserをOneToOneで見ているからそのまま引き継いでいる
