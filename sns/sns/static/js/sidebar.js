@@ -13,10 +13,11 @@ document.addEventListener('DOMContentLoaded', function() {
         touchStartX = event.touches[0].clientX;
         isSwiping = false;
 
-        // 画面の端からのスワイプかを判定
-        if (touchStartX < 50) {
+        const screenWidth = window.innerWidth;
+        // スワイプ開始位置による判定を調整
+        if (touchStartX < screenWidth * 0.2) { // 画面の20%まで
             activeSidebar = 'left';
-        } else if (touchStartX > window.innerWidth - 50) {
+        } else if (touchStartX > screenWidth * 0.8) { // 画面の80%以降
             activeSidebar = 'right';
         } else {
             activeSidebar = null;
@@ -56,9 +57,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const deltaX = touchMoveX - touchStartX;
         
-        if (activeSidebar === 'left' && deltaX > 100) {
+        if (activeSidebar === 'left' && deltaX > 50) { // 閾値を50pxに下げる
             showSidebar('left');
-        } else if (activeSidebar === 'right' && deltaX < -100) {
+        } else if (activeSidebar === 'right' && deltaX < -50) { // 閾値を50pxに下げる
             showSidebar('right');
         } else {
             hideSidebar(activeSidebar);
