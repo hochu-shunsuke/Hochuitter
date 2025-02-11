@@ -1,5 +1,30 @@
 from django.contrib import admin
-from .models import Post, Comment
+from .models import Post, Comment, Thread, ThreadPost
+
+# Threadモデル用のAdminクラス
+class ThreadAdmin(admin.ModelAdmin):
+    list_display = (
+        'title',
+        'user',
+        'created_at',
+    )
+    search_fields = ('title', 'user__username')
+    list_filter = ('created_at', 'user')
+    date_hierarchy = 'created_at'
+    prepopulated_fields = {'slug': ('title',)}
+
+# ThreadPostモデル用のAdminクラス
+class ThreadPostAdmin(admin.ModelAdmin):
+    list_display = (
+        'content',
+        'order',
+        'post_date',
+        'user',
+        'thread',
+    )
+    search_fields = ('content', 'user__username', 'thread__title')
+    list_filter = ('post_date', 'user', 'thread')
+    date_hierarchy = 'post_date'
 
 # Postモデル用のAdminクラス
 class PostAdmin(admin.ModelAdmin):
@@ -50,5 +75,7 @@ class CommentAdmin(admin.ModelAdmin):
     filter_horizontal = ('liked_users',)  # いいねしたユーザの選択を分かりやすく
 
 # 管理サイトにモデルを登録
+admin.site.register(Thread, ThreadAdmin)
+admin.site.register(ThreadPost, ThreadPostAdmin)
 admin.site.register(Post, PostAdmin)
 admin.site.register(Comment, CommentAdmin)

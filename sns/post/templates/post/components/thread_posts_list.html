@@ -1,0 +1,81 @@
+<div class="thread-posts-container">
+    <div class="thread-posts">
+        {% for post in thread_posts %}
+        <div class="thread-post">
+            <div class="thread-post-header">
+                <div class="thread-post-meta">
+                    <span class="thread-post-number">#{{ post.order }}</span>
+                    <span class="thread-post-author">@{{ post.user.username }}</span>
+                    <span class="thread-post-date">{{ post.post_date|date:"Y/m/d H:i" }}</span>
+                </div>
+            </div>
+            <div class="thread-post-text">
+                {{ post.content }}
+            </div>
+        </div>
+        {% empty %}
+        <div class="thread-posts-empty">
+            まだ投稿がありません。最初の投稿を作成してください。
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    .thread-posts-container {
+        background-color: var(--bg-sidebar);
+        border: 1px solid var(--border-color);
+        border-radius: 1rem;
+        padding: 1.5rem;
+    }
+
+    .thread-posts {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .thread-post {
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .thread-post:last-child {
+        border-bottom: none;
+    }
+
+    .thread-post-header {
+        margin-bottom: 0.5rem;
+    }
+
+    .thread-post-meta {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        font-size: 0.875rem;
+    }
+
+    .thread-post-number {
+        font-weight: bold;
+        color: var(--accent-color);
+    }
+
+    .thread-post-author {
+        color: var(--accent-color);
+    }
+
+    .thread-post-date {
+        color: var(--text-secondary);
+    }
+
+    .thread-post-text {
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+
+    .thread-posts-empty {
+        text-align: center;
+        color: var(--text-secondary);
+        padding: 1rem 0;
+    }
+</style>

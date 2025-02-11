@@ -103,3 +103,29 @@ class Comment(models.Model):
             models.Index(fields=['like_count']),
             models.Index(fields=['post_date']),
         ]
+
+class ThreadPost(models.Model):
+    content = models.CharField(max_length=280)
+    order = models.PositiveIntegerField()  # スレッド内での投稿順序
+    post_date = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(
+        User,
+        related_name='thread_posts',
+        on_delete=models.CASCADE
+    )
+    thread = models.ForeignKey(
+        Thread,
+        related_name='thread_posts',
+        on_delete=models.CASCADE
+    )
+    
+    def __str__(self):
+        return f"{self.thread.title} - Post #{self.order}"
+    
+    class Meta:
+        ordering = ['order']  # 投稿順に並び替え
+        unique_together = ['thread', 'order']  # スレッド内での投稿順序は一意
+        indexes = [
+            models.Index(fields=['order']),
+            models.Index(fields=['post_date']),
+        ]

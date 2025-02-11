@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Post, Comment, Thread
+from .models import Post, Comment, Thread, ThreadPost
 from django.urls import reverse_lazy, reverse
 from .form import PostForm, CommentForm
 from django.contrib.auth.models import User
 from social.models import Follow, Profile
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.db.models import Max
 
 def index(request):
     # ログインユーザーの情報を取得
@@ -80,29 +81,28 @@ def create_thread(request):
 @login_required
 def thread_detail(request, thread_id):
     thread = get_object_or_404(Thread, id=thread_id)
-    posts = Post.objects.filter(thread=thread)[:500]
+    thread_posts = ThreadPost.objects.filter(thread=thread).order_by('order')
     profile = Profile.objects.get_or_create(user=request.user)[0]
 
     if request.method == 'POST':
-        form = PostForm(request.POST)
-        if form.is_valid():
-            post = form.save(commit=False)
-            post.user = request.user
-            post.thread = thread
-            post.save()
+        content = request.POST.get('content')
+        if content:
+            # 現在の最大orderを取得し、新しい投稿の順序を設定
+            max_order = thread_posts.aggregate(Max('order'))['order__max']
+            new_order = 1 if max_order is None else max_order + 1
+            
+            # 新しい投稿を作成
+            ThreadPost.objects.create(
+                content=content,
+                user=request.user,
+                thread=thread,
+                order=new_order
+            )
             return redirect('post:thread_detail', thread_id=thread.id)
-    else:
-        form = PostForm()
-
-    # 投稿のいいねとブックマーク状態を設定
-    for post in posts:
-        post.comments_count = Comment.objects.filter(post=post, parent_comment=None).count()
-        post.is_bookmarked = post.bookmarked_users.filter(id=request.user.id).exists()
 
     context = {
         'thread': thread,
-        'posts': posts,
-        'form': form,
+        'thread_posts': thread_posts,
         'user_id': request.user.id,
         'username': request.user.username,
         'profile': profile,
