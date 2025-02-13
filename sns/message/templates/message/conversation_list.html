@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 
 {% block title %}メッセージ - Hochuitter{% endblock %}
-
 {% block content %}
 <div class="messages-container {% if not user.is_authenticated %}not-authenticated{% endif %}">
     <h1>メッセージ</h1>
@@ -17,7 +16,7 @@
     {% elif conversation_data %}
         <div class="conversation-list">
             {% for data in conversation_data %}
-                <div class="conversation-item {% if data.conversation.last_message and data.conversation.last_message.to_user == request.user and not data.conversation.last_message.is_read %}unread{% endif %}">
+                <div class="conversation-item">
                     <a href="{% url 'message:conversation_detail' user_id=data.other_user.id %}" class="conversation-link">
                         <div class="conversation-header">
                             <h3 class="user-name">{{ data.other_user.username }}</h3>
@@ -122,11 +121,6 @@
     border-color: var(--accent-color);
     transform: translateY(-1px);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.conversation-item.unread {
-    background-color: var(--bg-hover);
-    border-color: var(--accent-color);
 }
 
 .conversation-link {

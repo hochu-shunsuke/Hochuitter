@@ -46,14 +46,12 @@ def conversation_detail(request, user_id):
         conversation = Conversation.objects.create()
         conversation.participants.add(request.user, other_user)
     
-    # メッセージを取得
+    # メッセージを取得（30日以内のもののみ）
     messages = DirectMessage.objects.filter(
         Q(from_user=request.user, to_user=other_user) |
-        Q(from_user=other_user, to_user=request.user)
+        Q(from_user=other_user, to_user=request.user),
+        created_at__gte=timezone.now() - timezone.timedelta(days=30)
     ).order_by('created_at')
-    
-    # 未読メッセージを既読にする
-    messages.filter(to_user=request.user, is_read=False).update(is_read=True)
     
     return render(request, 'message/conversation_detail.html', {
         'user': request.user,
@@ -67,14 +65,8 @@ def conversation_detail(request, user_id):
 
 @login_required
 def send_message(request, user_id):
-    if request.method != 'POST':
-        return JsonResponse({'error': 'Invalid request method'}, status=400)
-    
     to_user = get_object_or_404(User, id=user_id)
     content = request.POST.get('content', '').strip()
-    
-    if not content:
-        return JsonResponse({'error': 'Message content cannot be empty'}, status=400)
     
     # メッセージを作成
     message = DirectMessage.objects.create(
@@ -90,10 +82,7 @@ def send_message(request, user_id):
         conversation.save()
     
     return JsonResponse({
-        'status': 'success',
         'message': {
-            'id': message.id,
-            'content': message.content,
-            'created_at': message.created_at.strftime('%Y-%m-%d %H:%M:%S')
+            'created_at': message.created_at.strftime('%Y-%m-%d %H:%i')
         }
     })

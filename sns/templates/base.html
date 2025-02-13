@@ -47,15 +47,6 @@
 
         <!-- メインコンテンツ -->
         <main id="main-content">
-            {% if messages %}
-            <div class="messages" role="alert" aria-live="polite">
-                {% for message in messages %}
-                <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
-                    {{ message }}
-                </div>
-                {% endfor %}
-            </div>
-            {% endif %}
             {% block content %}{% endblock %}
         </main>
 

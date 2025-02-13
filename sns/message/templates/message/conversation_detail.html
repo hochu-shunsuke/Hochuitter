@@ -1,25 +1,22 @@
 {% extends 'base.html' %}
 
 {% block title %}{{ other_user.username }}とのメッセージ - Hochuitter{% endblock %}
-
 {% block content %}
 <div class="conversation-container">
     <div class="conversation-header">
-        <h2>{{ other_user.username }}とのメッセージ</h2>
-        <a href="{% url 'message:conversation_list' %}" class="back-link">←戻る</a>
+        <a href="{% url 'message:conversation_list' %}" class="back-link">←</a>
+        <h2>{{ other_user.username }}</h2>
+        <div class="header-spacer"></div>
     </div>
 
     <div class="messages-list" id="messages-list">
         {% for message in messages %}
-            <div class="message {% if message.from_user == request.user %}sent{% else %}received{% endif %}">
-                <div class="message-content">
+            <div class="chat-message {% if message.from_user == request.user %}sent{% else %}received{% endif %}">
+                <div class="chat-message-content">
                     {{ message.content }}
                 </div>
-                <div class="message-meta">
+                <div class="chat-message-meta">
                     <span class="timestamp">{{ message.created_at|date:"Y/m/d H:i" }}</span>
-                    {% if message.from_user == request.user and message.is_read %}
-                        <span class="read-status">既読</span>
-                    {% endif %}
                 </div>
             </div>
         {% empty %}
@@ -40,83 +37,99 @@
 .conversation-container {
     max-width: 800px;
     margin: 0 auto;
-    padding: 20px;
-    height: calc(100vh - 100px);
-    display: flex;
-    flex-direction: column;
+    height: 100vh;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
 }
 
 .conversation-header {
-    display: flex;
-    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
     align-items: center;
-    margin-bottom: 20px;
+    gap: 16px;
+    padding: 14px 20px;
+    background-color: var(--bg-primary);
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+
+.conversation-header h2 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: var(--text-primary);
+    text-align: center;
 }
 
 .back-link {
     text-decoration: none;
-    color: #666;
+    color: var(--text-secondary);
+    font-size: 1.2em;
+    line-height: 1;
+    padding: 4px;
+}
+
+.header-spacer {
+    width: 24px;
 }
 
 .messages-list {
-    flex-grow: 1;
     overflow-y: auto;
-    padding: 10px;
-    margin-bottom: 20px;
+    padding: 16px 20px;
+    scroll-behavior: smooth;
+    margin-bottom: 0;
 }
 
-.message {
+.chat-message {
     max-width: 70%;
     margin-bottom: 15px;
     clear: both;
 }
 
-.message.sent {
+.chat-message.sent {
     float: right;
 }
 
-.message.received {
+.chat-message.received {
     float: left;
 }
 
-.message-content {
+.chat-message-content {
     padding: 10px 15px;
     border-radius: 15px;
     margin-bottom: 5px;
     word-wrap: break-word;
 }
 
-.message.sent .message-content {
-    background-color: #007AFF;
+.chat-message.sent .chat-message-content {
+    background-color: var(--accent-color);
     color: white;
 }
 
-.message.received .message-content {
-    background-color: #E9ECEF;
-    color: black;
+.chat-message.received .chat-message-content {
+    background-color: var(--bg-hover);
+    color: var(--text-primary);
 }
 
-.message-meta {
+.chat-message-meta {
     font-size: 0.8em;
-    color: #666;
+    color: var(--text-secondary);
     margin-top: 2px;
 }
 
-.message.sent .message-meta {
+.chat-message.sent .chat-message-meta {
     text-align: right;
-}
-
-.read-status {
-    margin-left: 5px;
-    color: #007AFF;
 }
 
     .message-form {
         position: sticky;
         bottom: 0;
-        padding: 15px;
+        padding: 16px 20px;
         background-color: var(--bg-primary);
         border-top: 1px solid var(--border-color);
+        box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.1);
     }
 
     .input-container {
@@ -174,7 +187,7 @@
 }
 
 /* ダークモード対応 */
-.dark-mode .message.received .message-content {
+.dark-mode .chat-message.received .chat-message-content {
     background-color: #2a2a2a;
     color: white;
 }
@@ -220,20 +233,20 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => response.json())
         .then(data => {
-            if (data.status === 'success') {
-                // メッセージを画面に追加
-                const messageDiv = document.createElement('div');
-                messageDiv.className = 'message sent';
-                messageDiv.innerHTML = `
-                    <div class="message-content">${content}</div>
-                    <div class="message-meta">
+            // 新しいメッセージを追加
+            messagesList.insertAdjacentHTML('beforeend', `
+                <div class="chat-message sent">
+                    <div class="chat-message-content">${content}</div>
+                    <div class="chat-message-meta">
                         <span class="timestamp">${data.message.created_at}</span>
                     </div>
-                `;
-                messagesList.appendChild(messageDiv);
-                messageContent.value = '';
-                messagesList.scrollTop = messagesList.scrollHeight;
-            }
+                </div>
+            `);
+            
+            // 入力フィールドをクリアしてスクロール
+            messageContent.value = '';
+            messageContent.style.height = '40px';
+            messagesList.scrollTop = messagesList.scrollHeight;
         })
         .catch(error => console.error('Error:', error));
     });
