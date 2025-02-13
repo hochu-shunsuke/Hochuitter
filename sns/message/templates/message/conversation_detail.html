@@ -111,40 +111,61 @@
     color: #007AFF;
 }
 
-.message-form {
-    padding: 15px;
-    background-color: #fff;
-    border-top: 1px solid #ddd;
-}
+    .message-form {
+        position: sticky;
+        bottom: 0;
+        padding: 15px;
+        background-color: var(--bg-primary);
+        border-top: 1px solid var(--border-color);
+    }
 
-.input-container {
-    display: flex;
-    gap: 10px;
-}
+    .input-container {
+        display: flex;
+        align-items: flex-end;
+        gap: 10px;
+        max-width: 800px;
+        margin: 0 auto;
+    }
 
-textarea {
-    flex-grow: 1;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    resize: none;
-    height: 40px;
-    min-height: 40px;
-    max-height: 120px;
-}
+    textarea {
+        flex-grow: 1;
+        padding: 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        resize: none;
+        min-height: 40px;
+        max-height: 200px;
+        background-color: var(--bg-input);
+        color: var(--text-primary);
+        font-size: 14px;
+        line-height: 1.5;
+    }
 
-button {
-    padding: 10px 20px;
-    background-color: #007AFF;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-}
+    textarea:focus {
+        outline: none;
+        border-color: var(--accent-color);
+    }
 
-button:hover {
-    background-color: #0056b3;
-}
+    button {
+        padding: 8px 16px;
+        height: 40px;
+        background-color: var(--accent-color);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: background-color 0.2s;
+    }
+
+    button:hover {
+        background-color: var(--accent-hover);
+    }
+
+    button:disabled {
+        background-color: var(--disabled-color);
+        cursor: not-allowed;
+    }
 
 .no-messages {
     text-align: center;
@@ -218,10 +239,30 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // テキストエリアの高さ自動調整
-    messageContent.addEventListener('input', function() {
-        this.style.height = '40px';
-        this.style.height = `${Math.min(this.scrollHeight, 120)}px`;
-    });
+    function adjustTextareaHeight() {
+        const textarea = messageContent;
+        const form = messageForm;
+        const originalHeight = textarea.style.height;
+        
+        // 高さをリセットして実際の内容の高さを計算
+        textarea.style.height = 'auto';
+        const scrollHeight = textarea.scrollHeight;
+        
+        // 最小高さと最大高さの制限を適用
+        const newHeight = Math.max(40, Math.min(scrollHeight, 200));
+        textarea.style.height = `${newHeight}px`;
+        
+        // 高さが変更された場合のみスクロール位置を調整
+        if (originalHeight !== textarea.style.height) {
+            messagesList.scrollTop = messagesList.scrollHeight;
+        }
+    }
+
+    // 入力時に高さを調整
+    messageContent.addEventListener('input', adjustTextareaHeight);
+    
+    // フォーカス時にも高さを調整
+    messageContent.addEventListener('focus', adjustTextareaHeight);
 });
 </script>
 {% endblock %}

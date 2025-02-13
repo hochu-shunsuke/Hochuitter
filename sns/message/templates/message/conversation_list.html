@@ -3,10 +3,18 @@
 {% block title %}メッセージ - Hochuitter{% endblock %}
 
 {% block content %}
-<div class="messages-container">
+<div class="messages-container {% if not user.is_authenticated %}not-authenticated{% endif %}">
     <h1>メッセージ</h1>
     
-    {% if conversation_data %}
+    {% if not user.is_authenticated %}
+        <div class="auth-required">
+            <p>メッセージの利用にはログインが必要です</p>
+            <div class="auth-buttons">
+                <a href="{% url 'login' %}" class="auth-button login">ログイン</a>
+                <a href="{% url 'signup' %}" class="auth-button signup">新規登録</a>
+            </div>
+        </div>
+    {% elif conversation_data %}
         <div class="conversation-list">
             {% for data in conversation_data %}
                 <div class="conversation-item {% if data.conversation.last_message and data.conversation.last_message.to_user == request.user and not data.conversation.last_message.is_read %}unread{% endif %}">
@@ -40,28 +48,90 @@
     padding: 20px;
 }
 
+.messages-container h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: var(--text-primary);
+}
+
+/* 未認証時のスタイル */
+.auth-required {
+    text-align: center;
+    padding: 40px 20px;
+    background-color: var(--bg-sidebar);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.auth-required p {
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+    font-size: 1.1em;
+}
+
+.auth-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.auth-button {
+    padding: 10px 24px;
+    border-radius: 9999px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.auth-button.login {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+.auth-button.signup {
+    border: 1px solid var(--accent-color);
+    color: var(--accent-color);
+}
+
+.auth-button.login:hover {
+    background-color: var(--accent-hover);
+}
+
+.auth-button.signup:hover {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+/* 会話リスト */
 .conversation-list {
     margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 .conversation-item {
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    margin-bottom: 10px;
-    transition: background-color 0.2s;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    transition: all 0.2s;
+    background-color: var(--bg-primary);
 }
 
 .conversation-item:hover {
-    background-color: #f5f5f5;
+    border-color: var(--accent-color);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .conversation-item.unread {
-    background-color: #e8f4fe;
+    background-color: var(--bg-hover);
+    border-color: var(--accent-color);
 }
 
 .conversation-link {
     display: block;
-    padding: 15px;
+    padding: 16px;
     text-decoration: none;
     color: inherit;
 }
@@ -70,51 +140,52 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
 }
 
 .user-name {
     margin: 0;
     font-size: 1.1em;
-    color: #333;
+    font-weight: 600;
+    color: var(--text-primary);
 }
 
 .timestamp {
     font-size: 0.8em;
-    color: #666;
+    color: var(--text-secondary);
 }
 
 .conversation-preview {
-    color: #666;
+    color: var(--text-secondary);
     font-size: 0.9em;
+    line-height: 1.4;
 }
 
 .no-conversations {
     text-align: center;
-    color: #666;
+    color: var(--text-secondary);
     margin-top: 40px;
+    padding: 20px;
+    background-color: var(--bg-sidebar);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
 }
 
 /* ダークモード対応 */
+.dark-mode .auth-required {
+    background-color: var(--bg-sidebar-dark);
+}
+
 .dark-mode .conversation-item {
-    border-color: #444;
+    background-color: var(--bg-primary-dark);
 }
 
 .dark-mode .conversation-item:hover {
-    background-color: #2a2a2a;
+    background-color: var(--bg-hover-dark);
 }
 
 .dark-mode .conversation-item.unread {
-    background-color: #1a3a5a;
-}
-
-.dark-mode .user-name {
-    color: #fff;
-}
-
-.dark-mode .timestamp,
-.dark-mode .conversation-preview {
-    color: #aaa;
+    background-color: var(--bg-accent-dark);
 }
 </style>
 {% endblock %}

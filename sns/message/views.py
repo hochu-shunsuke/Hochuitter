@@ -6,9 +6,16 @@ from django.http import JsonResponse
 from .models import DirectMessage, Conversation
 from django.utils import timezone
 
-@login_required
 def conversation_list(request):
-    conversations = request.user.conversations.all()
+    if not request.user.is_authenticated:
+        return render(request, 'message/conversation_list.html', {
+            'user': request.user,
+            'user_id': None,
+            'profile': None
+        })
+
+    profile = request.user.profile
+    conversations = request.user.conversations.all().order_by('-last_message__created_at')
     conversation_data = []
     
     for conversation in conversations:
@@ -20,11 +27,17 @@ def conversation_list(request):
             })
     
     return render(request, 'message/conversation_list.html', {
-        'conversation_data': conversation_data
+        'user': request.user,
+        'user_id': request.user.id,
+        'profile': profile,
+        'viewer_profile': profile,  # ダークモード対応用
+        'conversation_data': sorted(conversation_data, key=lambda x: x['conversation'].last_message.created_at if x['conversation'].last_message else x['conversation'].updated_at, reverse=True)
     })
 
-@login_required
 def conversation_detail(request, user_id):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
     other_user = get_object_or_404(User, id=user_id)
     
     # 会話を取得または作成
@@ -43,9 +56,13 @@ def conversation_detail(request, user_id):
     messages.filter(to_user=request.user, is_read=False).update(is_read=True)
     
     return render(request, 'message/conversation_detail.html', {
+        'user': request.user,
+        'user_id': request.user.id,
+        'profile': request.user.profile,
         'conversation': conversation,
         'messages': messages,
-        'other_user': other_user
+        'other_user': other_user,
+        'viewer_profile': request.user.profile  # ダークモード対応用
     })
 
 @login_required
