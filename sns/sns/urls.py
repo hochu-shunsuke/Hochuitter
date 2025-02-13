@@ -23,6 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include('post.urls')),
     path('social/',include('social.urls')),#social関連のurlの先頭にはsocialをつける
+    path('messages/', include('message.urls')),
     path('login/', views.CustomLoginView.as_view(
         redirect_authenticated_user=True,
         template_name='registration/login.html'

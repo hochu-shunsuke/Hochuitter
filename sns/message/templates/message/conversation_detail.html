@@ -1,0 +1,227 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ other_user.username }}とのメッセージ - Hochuitter{% endblock %}
+
+{% block content %}
+<div class="conversation-container">
+    <div class="conversation-header">
+        <h2>{{ other_user.username }}とのメッセージ</h2>
+        <a href="{% url 'message:conversation_list' %}" class="back-link">←戻る</a>
+    </div>
+
+    <div class="messages-list" id="messages-list">
+        {% for message in messages %}
+            <div class="message {% if message.from_user == request.user %}sent{% else %}received{% endif %}">
+                <div class="message-content">
+                    {{ message.content }}
+                </div>
+                <div class="message-meta">
+                    <span class="timestamp">{{ message.created_at|date:"Y/m/d H:i" }}</span>
+                    {% if message.from_user == request.user and message.is_read %}
+                        <span class="read-status">既読</span>
+                    {% endif %}
+                </div>
+            </div>
+        {% empty %}
+            <p class="no-messages">メッセージはありません</p>
+        {% endfor %}
+    </div>
+
+    <form id="message-form" class="message-form" method="post" action="{% url 'message:send_message' user_id=other_user.id %}">
+        {% csrf_token %}
+        <div class="input-container">
+            <textarea name="content" id="message-content" placeholder="メッセージを入力..." required></textarea>
+            <button type="submit">送信</button>
+        </div>
+    </form>
+</div>
+
+<style>
+.conversation-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    height: calc(100vh - 100px);
+    display: flex;
+    flex-direction: column;
+}
+
+.conversation-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.back-link {
+    text-decoration: none;
+    color: #666;
+}
+
+.messages-list {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+.message {
+    max-width: 70%;
+    margin-bottom: 15px;
+    clear: both;
+}
+
+.message.sent {
+    float: right;
+}
+
+.message.received {
+    float: left;
+}
+
+.message-content {
+    padding: 10px 15px;
+    border-radius: 15px;
+    margin-bottom: 5px;
+    word-wrap: break-word;
+}
+
+.message.sent .message-content {
+    background-color: #007AFF;
+    color: white;
+}
+
+.message.received .message-content {
+    background-color: #E9ECEF;
+    color: black;
+}
+
+.message-meta {
+    font-size: 0.8em;
+    color: #666;
+    margin-top: 2px;
+}
+
+.message.sent .message-meta {
+    text-align: right;
+}
+
+.read-status {
+    margin-left: 5px;
+    color: #007AFF;
+}
+
+.message-form {
+    padding: 15px;
+    background-color: #fff;
+    border-top: 1px solid #ddd;
+}
+
+.input-container {
+    display: flex;
+    gap: 10px;
+}
+
+textarea {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    resize: none;
+    height: 40px;
+    min-height: 40px;
+    max-height: 120px;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #007AFF;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.no-messages {
+    text-align: center;
+    color: #666;
+    margin-top: 20px;
+}
+
+/* ダークモード対応 */
+.dark-mode .message.received .message-content {
+    background-color: #2a2a2a;
+    color: white;
+}
+
+.dark-mode .message-form {
+    background-color: #1a1a1a;
+    border-color: #444;
+}
+
+.dark-mode textarea {
+    background-color: #2a2a2a;
+    border-color: #444;
+    color: white;
+}
+
+.dark-mode .back-link {
+    color: #aaa;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const messagesList = document.getElementById('messages-list');
+    const messageForm = document.getElementById('message-form');
+    const messageContent = document.getElementById('message-content');
+
+    // スクロールを一番下に移動
+    messagesList.scrollTop = messagesList.scrollHeight;
+
+    // メッセージ送信のAjax処理
+    messageForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const content = messageContent.value.trim();
+        if (!content) return;
+
+        fetch(messageForm.action, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `content=${encodeURIComponent(content)}`,
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // メッセージを画面に追加
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message sent';
+                messageDiv.innerHTML = `
+                    <div class="message-content">${content}</div>
+                    <div class="message-meta">
+                        <span class="timestamp">${data.message.created_at}</span>
+                    </div>
+                `;
+                messagesList.appendChild(messageDiv);
+                messageContent.value = '';
+                messagesList.scrollTop = messagesList.scrollHeight;
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+
+    // テキストエリアの高さ自動調整
+    messageContent.addEventListener('input', function() {
+        this.style.height = '40px';
+        this.style.height = `${Math.min(this.scrollHeight, 120)}px`;
+    });
+});
+</script>
+{% endblock %}

@@ -19,7 +19,7 @@
                         <a href="{% url 'post:index' %}" class="nav-button" aria-label="検索">🔍 検索</a>
                         {% if user_id %}
                             <a href="{% url 'post:create_post' %}" class="nav-button" aria-label="ポストする">✏️ ポストする</a>
-                            <a href="{% url 'post:index' %}" class="nav-button" aria-label="メッセージ">💬 メッセージ</a>
+                            <a href="{% url 'message:conversation_list' %}" class="nav-button" aria-label="メッセージ">💬 メッセージ</a>
                             <a href="{% url 'post:threads' %}" class="nav-button" aria-label="スレッド">📜 スレッド</a>
                             <a href="{% url 'post:bookmarks' %}" class="nav-button" aria-label="ブックマーク">{{ profile.bookmark_emoji }} ブックマーク</a>
                             <a href="{% url 'social:user_profile' username=request.user.username %}" class="nav-button" aria-label="マイページ">👤 マイページ</a>

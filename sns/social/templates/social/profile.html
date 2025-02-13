@@ -7,10 +7,15 @@
     <div class="profile-header">
         <h1 class="username">@{{ target_user.username }}</h1>
         {% if user_id and user_id != target_user.id %}
-            <button class="follow-button {% if is_following %}following{% endif %}" 
-                    data-username="{{ target_user.username }}">
-                <span class="follow-text">{% if is_following %}フォロー中{% else %}フォローする{% endif %}</span>
-            </button>
+            <div class="profile-actions">
+                <button class="follow-button {% if is_following %}following{% endif %}" 
+                        data-username="{{ target_user.username }}">
+                    <span class="follow-text">{% if is_following %}フォロー中{% else %}フォローする{% endif %}</span>
+                </button>
+                <a href="{% url 'message:conversation_detail' user_id=target_user.id %}" class="message-button">
+                    💬 メッセージ
+                </a>
+            </div>
         {% endif %}
     </div>
 
@@ -103,6 +108,38 @@
     .follow-button.following:hover {
         background-color: #dc2626;
         border-color: #dc2626;
+    }
+
+    .profile-actions {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .message-button {
+        padding: 0.5rem 1.5rem;
+        border-radius: 9999px;
+        border: 1px solid var(--border-color);
+        background: none;
+        color: var(--text-primary);
+        font-size: 0.875rem;
+        text-decoration: none;
+        transition: all var(--transition-base);
+    }
+
+    .message-button:hover {
+        background-color: var(--bg-hover);
+        border-color: var(--accent-color);
+    }
+
+    .dark-mode .message-button {
+        border-color: #444;
+        color: #fff;
+    }
+
+    .dark-mode .message-button:hover {
+        background-color: #2a2a2a;
+        border-color: var(--accent-color);
     }
 </style>
 
