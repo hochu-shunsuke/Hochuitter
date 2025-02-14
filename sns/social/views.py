@@ -23,13 +23,16 @@ def user_profile(request, username):
         ).exists()
     
     # ユーザーの投稿を取得
-    posts = target_user.posts.all()[:50]
+    posts = target_user.posts.select_related('user').prefetch_related('comments').order_by('-post_date')[:50]
     for post in posts:
-        post.comments_count = Comment.objects.filter(post=post, parent_comment=None).count()
+        # コメント数とブックマークの状態を設定
+        post.comments_count = post.comments.filter(parent_comment=None).count()
+        post.is_bookmarked = False
+        post.is_liked = False
+        
         if request.user.is_authenticated:
             post.is_bookmarked = post.bookmarked_users.filter(id=request.user.id).exists()
-        else:
-            post.is_bookmarked = False
+            post.is_liked = post.liked_users.filter(id=request.user.id).exists()
     
     return render(request, 'social/profile.html', {
         'target_user': target_user,
@@ -74,8 +77,17 @@ def toggle_follow(request, username):
         followed=target_user
     )
     
+    # フォロワー数を取得
+    followers_count = Follow.objects.filter(followed=target_user).count()
+    
     if not created:  # すでにフォローしている場合は解除
         follow_obj.delete()
-        return JsonResponse({'status': 'unfollowed'})
+        return JsonResponse({
+            'status': 'unfollowed',
+            'followers_count': followers_count - 1  # 解除後のカウント
+        })
         
-    return JsonResponse({'status': 'followed'})
+    return JsonResponse({
+        'status': 'followed',
+        'followers_count': followers_count
+    })

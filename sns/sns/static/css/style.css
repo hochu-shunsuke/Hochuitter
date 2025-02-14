@@ -52,6 +52,7 @@ body {
     min-width: 320px;
 }
 
+/* レイアウト */
 .layout-container {
     min-height: 100vh;
     position: relative;
@@ -66,10 +67,10 @@ body {
     }
     #main-content {
         grid-column: 2;
-        padding: var(--content-padding);
+        padding: 0;
         width: 100%;
-        max-width: 100%;
         box-sizing: border-box;
+        max-width: none;
     }
     #sidebar-left {
         grid-column: 1;
@@ -77,6 +78,153 @@ body {
     #sidebar-right {
         grid-column: 3;
     }
+
+    /* メインコンテンツ内のレイアウト */
+    .settings-container,
+    .profile-container,
+    .bookmarks-container,
+    .posts-list-container {
+        max-width: none;
+        width: 100%;
+    }
+}
+
+/* メインコンテンツ */
+#main-content {
+    position: relative;
+    min-height: 100vh;
+    background-color: var(--bg-main);
+    transition: all var(--transition-base);
+    box-sizing: border-box;
+}
+
+/* メインコンテンツ内のコンテナ共通スタイル */
+.settings-container,
+.profile-container,
+.bookmarks-container,
+.posts-list-container {
+    width: 100%;
+    min-width: 0;
+    padding: var(--content-padding);
+    box-sizing: border-box;
+    margin: 0 auto;
+}
+
+/* フォームコンテナ共通スタイル */
+.login-container,
+.signup-container,
+.form-container {
+    width: 100%;
+    max-width: min(100%, 400px);
+    margin: 2rem auto;
+    padding: var(--content-padding);
+    background-color: var(--bg-sidebar);
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    box-sizing: border-box;
+}
+
+/* フォーム要素スタイル */
+.settings-form {
+    width: 100%;
+    background-color: var(--bg-sidebar);
+    padding: 2rem;
+    border-radius: 1rem;
+    border: 1px solid var(--border-color);
+    box-sizing: border-box;
+}
+
+.settings-section {
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.settings-section:last-child {
+    margin-bottom: 2rem;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.settings-section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group:last-child {
+    margin-bottom: 0;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.form-input, .emoji-input, .theme-select, .spacing-select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    font-size: 1rem;
+    transition: border-color var(--transition-base);
+    box-sizing: border-box;
+}
+
+.emoji-input {
+    font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Android Emoji", EmojiSymbols, "EmojiOne Mozilla", "Twemoji Mozilla", "Segoe UI Symbol", "Noto Color Emoji Compat", "Noto Sans Symbols";
+    text-align: center;
+    font-size: 1.5rem;
+}
+
+.emoji-input::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.5;
+    font-size: 1rem;
+}
+
+.form-input:focus, .emoji-input:focus, .theme-select:focus, .spacing-select:focus {
+    outline: none;
+    border-color: var(--accent-color);
+}
+
+.help-text {
+    display: block;
+    margin-top: 0.25rem;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.error-message {
+    color: var(--danger-color);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.submit-button, .form-button {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color var(--transition-base);
+}
+
+.submit-button:hover, .form-button:hover {
+    opacity: 0.9;
 }
 
 /* オーバーレイ */
@@ -254,35 +402,6 @@ body {
     width: 100%;
 }
 
-/* ナビゲーションフォーム */
-.nav-form {
-    width: 100%;
-    padding: 0;
-    margin: 0;
-}
-
-/* ナビゲーションボタンの修正されたスタイル */
-.nav-button {
-    max-width: 100%;
-    margin: 0;
-    padding: 0.875rem 1.25rem;
-    box-sizing: border-box;
-}
-
-.nav-wrapper a.nav-button,
-.nav-form button.nav-button {
-    padding: 0.875rem 1.25rem;
-}
-
-/* メインコンテンツ */
-#main-content {
-    position: relative;
-    min-height: 100vh;
-    background-color: var(--bg-main);
-    transition: all var(--transition-base);
-    box-sizing: border-box;
-}
-
 /* アカウント情報 */
 .account-info {
     margin-top: auto;
@@ -337,6 +456,42 @@ body {
     background-color: var(--hover-bg);
 }
 
+/* ページヘッダー共通スタイル */
+.page-header {
+    margin-bottom: 2rem;
+}
+
+.page-header h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+/* ポストリスト */
+.posts-container {
+    margin-top: 2rem;
+}
+
+/* スクロールバー */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: 4px;
+}
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-color) transparent;
+}
+
 /* レスポンシブ対応 */
 @media (max-width: 1080px) {
     :root {
@@ -366,7 +521,15 @@ body {
     #main-content {
         margin: 0;
         width: 100%;
-        padding: var(--content-padding);
+        padding: 0;
+    }
+
+    .settings-container,
+    .profile-container,
+    .bookmarks-container,
+    .posts-list-container {
+        max-width: 800px;
+        margin: 0 auto;
     }
 
     /* サイドバー表示時のスタイル */
@@ -388,71 +551,4 @@ body {
     body.sidebar-right-visible #sidebar-right {
         transform: translateX(0);
     }
-}
-
-/* スクロールバー */
-::-webkit-scrollbar {
-    width: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-    background-color: var(--border-color);
-    border-radius: 4px;
-}
-
-* {
-    scrollbar-width: thin;
-    scrollbar-color: var(--border-color) transparent;
-}
-
-/* フォームスタイル */
-.form-container {
-    max-width: 400px;
-    margin: 2rem auto;
-    padding: 2rem;
-    background-color: var(--bg-sidebar);
-    border-radius: 1rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
-
-.form-group {
-    margin-bottom: 1rem;
-}
-
-.form-input {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid var(--border-color);
-    border-radius: 0.5rem;
-    background-color: var(--bg-main);
-    color: var(--text-primary);
-    font-size: 1rem;
-    transition: border-color var(--transition-base);
-    box-sizing: border-box;
-}
-
-.form-input:focus {
-    outline: none;
-    border-color: var(--accent-color);
-}
-
-.form-button {
-    width: 100%;
-    padding: 0.75rem;
-    background-color: var(--accent-color);
-    color: white;
-    border: none;
-    border-radius: 0.5rem;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color var(--transition-base);
-}
-
-.form-button:hover {
-    background-color: var(--accent-color-alpha);
 }

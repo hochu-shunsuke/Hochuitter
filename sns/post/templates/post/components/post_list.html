@@ -41,7 +41,7 @@
                 </button>
             {% endif %}
         </div>
-        <time class="post-date">{{ post.post_date }}</time>
+        <time class="post-date">{{ post.post_date|date:"Y/m/d G:i" }}</time>
     </div>
 </article>
 {% empty %}
@@ -258,12 +258,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const postId = this.getAttribute('data-post-id');
             
             try {
-                const response = await fetch(`/${postId}/toggle/like/`, {
+                const response = await fetch(`/post/${postId}/toggle/like/`, {
                     method: 'POST',
                     headers: {
                         'X-CSRFToken': '{{ csrf_token }}',
                         'Content-Type': 'application/json',
                     },
+                    credentials: 'same-origin'
                 });
                 
                 if (!response.ok) {
@@ -279,7 +280,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 // ボタンの状態を更新
-                this.classList.toggle('liked');
+                this.classList.toggle('liked', data.is_liked);
                 
             } catch (error) {
                 console.error('Error:', error);
@@ -293,12 +294,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const postId = this.getAttribute('data-post-id');
             
             try {
-                const response = await fetch(`/${postId}/toggle/bookmark/`, {
+                const response = await fetch(`/post/${postId}/toggle/bookmark/`, {
                     method: 'POST',
                     headers: {
                         'X-CSRFToken': '{{ csrf_token }}',
                         'Content-Type': 'application/json',
                     },
+                    credentials: 'same-origin'
                 });
                 
                 if (!response.ok) {

@@ -3,6 +3,113 @@
 {% block body_class %}{% if viewer_profile.theme == 'dark' %}dark-mode{% endif %}{% endblock %}
 
 {% block content %}
+<style>
+/* プロフィール固有のスタイル */
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background-color: var(--bg-sidebar);
+    border-radius: 1rem;
+    border: 1px solid var(--border-color);
+}
+
+.username {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.stats-container {
+    display: flex;
+    gap: 2rem;
+    padding: 1.5rem;
+    background-color: var(--bg-sidebar);
+    border-radius: 1rem;
+    border: 1px solid var(--border-color);
+    margin-bottom: 2rem;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.25rem;
+}
+
+.stat-value {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.profile-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.follow-button {
+    padding: 0.5rem 1.5rem;
+    border-radius: 9999px;
+    border: 1px solid var(--accent-color);
+    background: none;
+    color: var(--accent-color);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.follow-button:hover {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+.follow-button.following {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+.follow-button.following:hover {
+    background-color: var(--danger-color);
+    border-color: var(--danger-color);
+}
+
+.message-button {
+    padding: 0.5rem 1.5rem;
+    border-radius: 9999px;
+    border: 1px solid var(--border-color);
+    background: none;
+    color: var(--text-primary);
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: all var(--transition-base);
+}
+
+.message-button:hover {
+    background-color: var(--hover-bg);
+    border-color: var(--accent-color);
+}
+
+.dark-mode .message-button {
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+.dark-mode .message-button:hover {
+    background-color: var(--hover-bg);
+    border-color: var(--accent-color);
+}
+</style>
+
 <div class="profile-container">
     <div class="profile-header">
         <h1 class="username">@{{ target_user.username }}</h1>
@@ -35,148 +142,84 @@
     </div>
 </div>
 
-<style>
-    .profile-container {
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 2rem;
-    }
-
-    .profile-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 2rem;
-    }
-
-    .username {
-        font-size: 1.5rem;
-        font-weight: 600;
-        color: var(--text-primary);
-        margin: 0;
-    }
-
-    .stats-container {
-        display: flex;
-        gap: 2rem;
-        padding: 1.5rem;
-        background-color: var(--bg-sidebar);
-        border-radius: 1rem;
-        border: 1px solid var(--border-color);
-        margin-bottom: 2rem;
-    }
-
-    .stat-item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .stat-label {
-        font-size: 0.875rem;
-        color: var(--text-secondary);
-        margin-bottom: 0.25rem;
-    }
-
-    .stat-value {
-        font-size: 1.25rem;
-        font-weight: 600;
-        color: var(--text-primary);
-    }
-
-    .follow-button {
-        padding: 0.5rem 1.5rem;
-        border-radius: 9999px;
-        border: 1px solid var(--accent-color);
-        background: none;
-        color: var(--accent-color);
-        font-size: 0.875rem;
-        cursor: pointer;
-        transition: all var(--transition-base);
-    }
-
-    .follow-button:hover {
-        background-color: var(--accent-color);
-        color: white;
-    }
-
-    .follow-button.following {
-        background-color: var(--accent-color);
-        color: white;
-    }
-
-    .follow-button.following:hover {
-        background-color: #dc2626;
-        border-color: #dc2626;
-    }
-
-    .profile-actions {
-        display: flex;
-        gap: 1rem;
-        align-items: center;
-    }
-
-    .message-button {
-        padding: 0.5rem 1.5rem;
-        border-radius: 9999px;
-        border: 1px solid var(--border-color);
-        background: none;
-        color: var(--text-primary);
-        font-size: 0.875rem;
-        text-decoration: none;
-        transition: all var(--transition-base);
-    }
-
-    .message-button:hover {
-        background-color: var(--bg-hover);
-        border-color: var(--accent-color);
-    }
-
-    .dark-mode .message-button {
-        border-color: #444;
-        color: #fff;
-    }
-
-    .dark-mode .message-button:hover {
-        background-color: #2a2a2a;
-        border-color: var(--accent-color);
-    }
-</style>
-
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // CSRFトークンの取得
+        function getCsrfToken() {
+            const csrfCookie = document.cookie.split(';')
+                .find(cookie => cookie.trim().startsWith('csrftoken='));
+            if (!csrfCookie) {
+                console.error('CSRF token not found in cookies');
+                return '';
+            }
+            return csrfCookie.split('=')[1];
+        }
+
         // フォローボタンの処理
         document.querySelectorAll('.follow-button').forEach(button => {
             button.addEventListener('click', async function() {
                 const username = this.getAttribute('data-username');
+                if (!username) {
+                    console.error('Username not found in button data');
+                    return;
+                }
+
+                const csrfToken = getCsrfToken();
+                if (!csrfToken) {
+                    alert('セッションの有効期限が切れています。ページを再読み込みしてください。');
+                    return;
+                }
+                
+                // ボタンを一時的に無効化
+                this.disabled = true;
                 
                 try {
-                    const response = await fetch(`/social/follow/${username}/`, {
+                    const url = "{% url 'social:toggle_follow' username=0 %}".replace('0', encodeURIComponent(username));
+                    const response = await fetch(url, {
                         method: 'POST',
                         headers: {
-                            'X-CSRFToken': '{{ csrf_token }}',
+                            'X-CSRFToken': csrfToken,
                             'Content-Type': 'application/json',
                         },
+                        credentials: 'same-origin'
                     });
                     
                     if (!response.ok) {
-                        throw new Error('Network response was not ok');
+                        if (response.status === 403) {
+                            alert('セッションの有効期限が切れています。ページを再読み込みしてください。');
+                            window.location.reload();
+                            return;
+                        }
+                        throw new Error(`HTTP error! status: ${response.status}`);
                     }
                     
                     const data = await response.json();
                     
-                    // ボタンの状態を更新
-                    this.classList.toggle('following', data.status === 'followed');
-                    const followText = this.querySelector('.follow-text');
-                    if (followText) {
-                        followText.textContent = data.status === 'followed' ? 'フォロー中' : 'フォローする';
+                    if (data.error) {
+                        throw new Error(data.error);
                     }
-
-                    // フォロワー数を更新（ページをリロード）
-                    window.location.reload();
                     
+                    if (data && typeof data.status === 'string') {
+                        // ボタンの状態を更新
+                        const isFollowing = data.status === 'followed';
+                        this.classList.toggle('following', isFollowing);
+                        const followText = this.querySelector('.follow-text');
+                        if (followText) {
+                            followText.textContent = isFollowing ? 'フォロー中' : 'フォローする';
+                        }
+
+                        // フォロワー数を更新
+                        const followerCountElement = document.querySelector('.stat-item:first-child .stat-value');
+                        if (followerCountElement && typeof data.followers_count === 'number') {
+                            followerCountElement.textContent = data.followers_count;
+                        }
+                    }
                 } catch (error) {
                     console.error('Error:', error);
+                    alert(`フォローの処理中にエラーが発生しました: ${error.message}`);
+                } finally {
+                    // 処理完了後にボタンを再度有効化
+                    this.disabled = false;
                 }
             });
         });

@@ -41,8 +41,9 @@ class Follow(models.Model):
         #自身がフォローしているユーザが自身をフォローしているか判定
         if self.follower!=self.followed and Follow.objects.filter(follower=self.followed,followed=self.follower).exists():
             self.ff_is_active=True
+            from django.utils import timezone
             if not self.ff_date:
-                self.ff_date=models.DateTimeField(auto_now_add=True) #相互フォロー状態になったときにff_date(相互フォローが完了した日)を追加
+                self.ff_date = timezone.now()  # 相互フォロー状態になったときにff_date(相互フォローが完了した日)を追加
         else:
             #相互フォローが解除されても，再フォロー時にデータベースの重複を防ぐためff_dateを消さずに一時的にff_is_activeをFalseにする
             self.ff_is_active=False
